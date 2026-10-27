@@ -9,18 +9,16 @@ static Layer *progress_layer;
 static BitmapLayer *image_layer;
 static TextLayer *time_layer;
 static char time_buf[8];
-static uint16_t start_ms;
-static int prev_elapsedms;
+static time_t start_s;
+static int prev_s;
 
 static int num_entries;
 static int selected_entry;
-static time_t time_start;
 static int bar_width;
 static int bar_total;
 
 static int saved_current;
 
-static AppTimer *timer;
 static GBitmap *image;
 
 #define STORAGE_VERSION 2
@@ -82,44 +80,35 @@ static void progress_paint_callback(Layer *layer, GContext *ctx)
   }
 }
 
-static void timer_callback(void *data)
+static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
 {
-  time_t now;
-  uint16_t nowms;
-  time_ms(&now, &nowms);
   int mark_high = entries[selected_entry].quarts_high;
-  
-  int elapsedms = (int)nowms - (int)start_ms + 1000 * (int)(now - time_start);
-  if(elapsedms < prev_elapsedms) {
-    elapsedms = prev_elapsedms;
+  int mark_low = entries[selected_entry].quarts_low;
+  int total_s = mark_high * 15;
+  if(total_s <= 0) {
+    total_s = 15;
   }
-  if(elapsedms < 0) {
-    elapsedms = 0;
-  }
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "elapsed=%d", elapsedms);
 
-  bar_width = (bar_total * elapsedms) / (mark_high * 15000);
-  int remaining = mark_high * 15 - elapsedms / 1000;
-  if(remaining < 0) {
-    remaining = 0;
+  int elapsed_s = (int)(time(NULL) - start_s);
+  if(elapsed_s < 0) {
+    elapsed_s = 0;
   }
+  if(elapsed_s > total_s) {
+    elapsed_s = total_s;
+  }
+
+  int remaining = total_s - elapsed_s;
   snprintf(time_buf, sizeof(time_buf), "%d:%02d", remaining / 60, remaining % 60);
   text_layer_set_text(time_layer, time_buf);
+  bar_width = (bar_total * elapsed_s) / total_s;
 
-  if(bar_width >= bar_total) {
-    bar_width = bar_total;
-    timer = 0;
+  if(elapsed_s >= total_s) {
+    tick_timer_service_unsubscribe();
     vibes_short_pulse();
-  } else {
-    int nextms = 1000 - (elapsedms % 1000) + 30;
-    int mark_low = entries[selected_entry].quarts_low;
-    if(prev_elapsedms >= 0 && prev_elapsedms < mark_low * 15000 && elapsedms >= mark_low * 15000) {
-      vibes_short_pulse();
-    }
-    prev_elapsedms = elapsedms;
-    app_timer_register(nextms, timer_callback, 0);
+  } else if(prev_s >= 0 && prev_s < mark_low * 15 && elapsed_s >= mark_low * 15) {
+    vibes_short_pulse();
   }
-
+  prev_s = elapsed_s;
   layer_mark_dirty(progress_layer);
 }
 
@@ -149,7 +138,7 @@ static void timer_window_load(Window *window) {
   GRect bounds = layer_get_frame(window_layer);
 
   image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_TEA);
-  image_layer = bitmap_layer_create(bounds);
+  image_layer = bitmap_layer_create(GRect(bounds.size.w / 2 - 12, 188, 24, 28));
   bitmap_layer_set_bitmap(image_layer, image);
   bitmap_layer_set_alignment(image_layer, GAlignCenter);
   bitmap_layer_set_compositing_mode(image_layer, GCompOpAssignInverted);
@@ -189,16 +178,14 @@ static void timer_window_appear(Window *window) {
   text_layer_set_text(name_layer, entry->name);
   text_layer_set_text(content_layer, entry->content);
   bar_width = 0;
-  time_ms(&time_start, &start_ms);
-  prev_elapsedms = -1;
-  timer = app_timer_register(1, timer_callback, 0);
+  start_s = time(NULL);
+  prev_s = -1;
+  tick_handler(NULL, SECOND_UNIT);
+  tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
 }
 
 static void timer_window_disappear(Window *window) {
-  if(timer) {
-    app_timer_cancel(timer);
-    timer = 0;
-  }
+  tick_timer_service_unsubscribe();
 }
 
 static void timer_window_unload(Window *window) {
