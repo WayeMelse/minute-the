@@ -13,7 +13,7 @@ module.exports = function() {
       function updateVisibility() {
         var enabled = toggle.get();
 
-        ['Name', 'Content', 'Min', 'Max'].forEach(function(suffix) {
+        ['Name', 'Color', 'Content', 'Min', 'Max'].forEach(function(suffix) {
           var item = clayConfig.getItemByMessageKey(prefix + suffix);
           if (!item) {
             return;

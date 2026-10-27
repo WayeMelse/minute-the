@@ -53,6 +53,45 @@ typedef struct tea_entry {
 
 tea_entry entries[MAX_ENTRIES];
 
+#define STORE_COLOR_BASE (STORE_BASE + 200)
+static uint8_t tea_colors[MAX_ENTRIES];
+
+static GColor tea_accent(void)
+{
+  switch(tea_colors[selected_entry]) {
+    case 0: return GColorWhite;
+    case 2: return GColorBlack;
+    case 3: return GColorOrange;
+    case 4: return GColorYellow;
+    default: return GColorBrightGreen;
+  }
+}
+
+static GColor tea_clock_foreground(void)
+{
+  return tea_colors[selected_entry] == 2 ? GColorWhite : GColorBlack;
+}
+
+static GColor tea_progress_color(void)
+{
+  uint8_t color = tea_colors[selected_entry];
+  if((color == 0 && light_theme) || (color == 2 && !light_theme)) {
+    return theme_foreground();
+  }
+  return tea_accent();
+}
+
+static void update_tea_colors(void)
+{
+  if(clock_layer) {
+    text_layer_set_background_color(clock_layer, tea_accent());
+    text_layer_set_text_color(clock_layer, tea_clock_foreground());
+  }
+  if(progress_layer) {
+    layer_mark_dirty(progress_layer);
+  }
+}
+
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu, uint16_t section_index, void *data)
 {
   return num_entries;
@@ -107,7 +146,7 @@ static void progress_paint_callback(Layer *layer, GContext *ctx)
     GRect(PROGRESS_MARGIN, PROGRESS_MARGIN, bar_total, h),
     2, GCornersAll);
 
-  graphics_context_set_fill_color(ctx, GColorBrightGreen);
+  graphics_context_set_fill_color(ctx, tea_progress_color());
   if(bar_width > 0) {
     graphics_fill_rect(ctx,
       GRect(PROGRESS_MARGIN, PROGRESS_MARGIN, bar_width, h),
@@ -232,8 +271,8 @@ static void timer_window_load(Window *window) {
   text_layer_set_font(clock_layer,
                      fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
   text_layer_set_text_alignment(clock_layer, GTextAlignmentCenter);
-  text_layer_set_background_color(clock_layer, GColorBrightGreen);
-  text_layer_set_text_color(clock_layer, GColorBlack);
+  text_layer_set_background_color(clock_layer, tea_accent());
+  text_layer_set_text_color(clock_layer, tea_clock_foreground());
   layer_add_child(root, text_layer_get_layer(clock_layer));
 
   name_layer = text_layer_create(GRect(4, 59, w - 8, 37));
@@ -275,6 +314,7 @@ static void timer_window_load(Window *window) {
 static void timer_window_appear(Window *window) {
   tea_entry *entry = entries + selected_entry;
   text_layer_set_text(name_layer, entry->name);
+  update_tea_colors();
 
   int total_s = entry->quarts_high * 15;
   if(total_s % 60 == 0) {
@@ -358,7 +398,7 @@ static void message_received(DictionaryIterator *iter, void *context)
     if(!tp) { return; }
     idx = tp->value->int32;
 
-    if(idx >= MAX_ENTRIES) {
+    if(idx < 0 || idx >= MAX_ENTRIES) {
       return;
     }
 
@@ -387,6 +427,17 @@ static void message_received(DictionaryIterator *iter, void *context)
     entries[idx].quarts_low = lo;
     entries[idx].quarts_high = hi;
 
+    Tuple *color = dict_find(iter, 7);
+    int color_id = color ? color->value->int32 : 1;
+    if(color_id < 0 || color_id > 4) {
+      color_id = 1;
+    }
+    tea_colors[idx] = color_id;
+    persist_write_int(STORE_COLOR_BASE + idx, color_id);
+    if(idx == selected_entry) {
+      update_tea_colors();
+    }
+
     if(idx >= num_entries || idx+1 == count) {
       num_entries = idx + 1;
     }
@@ -412,6 +463,10 @@ static void init(void) {
     strcpy(entries[i].content, "Make in the usual way");
     entries[i].quarts_low = 12;
     entries[i].quarts_high = 20;
+    int stored_color = persist_exists(STORE_COLOR_BASE + i)
+      ? persist_read_int(STORE_COLOR_BASE + i) : 1;
+    tea_colors[i] = (stored_color >= 0 && stored_color <= 4)
+      ? stored_color : 1;
   }
 
   app_message_register_inbox_received(message_received);

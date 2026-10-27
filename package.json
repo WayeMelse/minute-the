@@ -57,7 +57,14 @@
       "tea7Content",
       "tea7Min",
       "tea7Max",
-      "themeLight"
+      "themeLight",
+      "tea1Color",
+      "tea2Color",
+      "tea3Color",
+      "tea4Color",
+      "tea5Color",
+      "tea6Color",
+      "tea7Color"
     ],
     "resources": {
       "media": [

@@ -26,11 +26,25 @@ function sendMessages() {
   }
 }
 
+function defaultTeaColor(name) {
+  var text = String(name || '').toLowerCase();
+  if(text.indexOf('blanc') >= 0 || text.indexOf('white') >= 0) return 0;
+  if(text.indexOf('vert') >= 0 || text.indexOf('green') >= 0) return 1;
+  if(text.indexOf('oolong') >= 0) return 3;
+  if(text.indexOf('tisane') >= 0 || text.indexOf('herbal') >= 0) return 4;
+  return 2;
+}
+
+function teaColor(tea) {
+  var color = parseInt(tea[5], 10);
+  return color >= 0 && color <= 4 ? color : defaultTeaColor(tea[1]);
+}
+
 function defaultTeas() {
   var teas = [];
   defaults.forEach(function(t) {
     if (t.enabled) {
-      teas.push([true, t.name, t.content, t.min * 4, t.max * 4]);
+      teas.push([true, t.name, t.content, t.min * 4, t.max * 4, defaultTeaColor(t.name)]);
     }
   });
   return teas;
@@ -77,7 +91,8 @@ function updateMenu(config) {
         3: teas[i][1],
         4: teas[i][2],
         5: teas[i][3],
-        6: teas[i][4]
+        6: teas[i][4],
+        7: teaColor(teas[i])
       });
       idx++;
     }
@@ -120,7 +135,8 @@ Pebble.addEventListener('webviewclosed', function(e) {
         val(settings, 'tea' + i + 'Name') || ('Thé ' + i),
         val(settings, 'tea' + i + 'Content') || '',
         minMinutes * 4,
-        maxMinutes * 4
+        maxMinutes * 4,
+        parseInt(val(settings, 'tea' + i + 'Color'), 10)
       ]);
     }
   }

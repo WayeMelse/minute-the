@@ -1,4 +1,5 @@
 var defaults = require('./defaults');
+var defaultColors = ['0', '1', '1', '2', '2', '3', '4'];
 
 function minuteOptions(max) {
   var options = [];
@@ -50,6 +51,19 @@ defaults.forEach(function(t, i) {
         messageKey: 'tea' + n + 'Name',
         label: 'Nom',
         defaultValue: t.name
+      },
+      {
+        type: 'select',
+        messageKey: 'tea' + n + 'Color',
+        label: 'Couleur du bandeau',
+        defaultValue: defaultColors[i],
+        options: [
+          { label: 'Blanc', value: '0' },
+          { label: 'Vert', value: '1' },
+          { label: 'Noir', value: '2' },
+          { label: 'Ambré', value: '3' },
+          { label: 'Jaune', value: '4' }
+        ]
       },
       {
         type: 'input',
