@@ -6,6 +6,9 @@ static MenuLayer *menu_layer;
 static TextLayer *name_layer;
 static Layer *progress_layer;
 static Layer *cup_layer;
+static AppTimer *steam_timer;
+static bool steam_running;
+static uint8_t steam_phase;
 static Layer *separator_layer;
 static TextLayer *clock_layer;
 static TextLayer *duration_layer;
@@ -91,6 +94,9 @@ static void update_tea_colors(void)
   if(progress_layer) {
     layer_mark_dirty(progress_layer);
   }
+  if(cup_layer) {
+    layer_mark_dirty(cup_layer);
+  }
 }
 
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu, uint16_t section_index, void *data)
@@ -137,6 +143,7 @@ static void menu_select_callback(MenuLayer *menu, MenuIndex *cell_index, void *d
 static void progress_paint_callback(Layer *layer, GContext *ctx)
 {
   GRect bounds = layer_get_bounds(layer);
+
   int h = bounds.size.h - 2 * PROGRESS_MARGIN;
   int mark_low = entries[selected_entry].quarts_low;
   int mark_high = entries[selected_entry].quarts_high;
@@ -148,6 +155,7 @@ static void progress_paint_callback(Layer *layer, GContext *ctx)
   graphics_fill_rect(ctx,
     GRect(PROGRESS_MARGIN, PROGRESS_MARGIN, bar_total, h),
     2, GCornersAll);
+
 
   graphics_context_set_fill_color(ctx, tea_progress_color());
   if(bar_width > 0) {
@@ -175,30 +183,199 @@ static void separator_paint_callback(Layer *layer, GContext *ctx)
   graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
 }
 
+static void cup_draw_outline(GContext *ctx, int cx,
+                             const GPoint *points, size_t count)
+{
+  for(size_t i = 1; i < count; ++i) {
+    graphics_draw_line(ctx,
+      GPoint(cx + points[i - 1].x, points[i - 1].y),
+      GPoint(cx + points[i].x, points[i].y));
+  }
+}
+
+static void cup_fill_shape(GContext *ctx, int cx,
+                           GPoint *points, uint32_t count)
+{
+  GPathInfo info = {
+    .num_points = count,
+    .points = points
+  };
+  GPath *path = gpath_create(&info);
+  if(!path) {
+    return;
+  }
+  gpath_move_to(path, GPoint(cx, 0));
+  gpath_draw_filled(ctx, path);
+  gpath_destroy(path);
+}
+
+static void steam_stop(void)
+{
+  steam_running = false;
+  if(steam_timer) {
+    app_timer_cancel(steam_timer);
+    steam_timer = NULL;
+  }
+}
+
+static void steam_timer_callback(void *context)
+{
+  steam_timer = NULL;
+  if(!steam_running || !cup_layer) {
+    return;
+  }
+
+  steam_phase = (steam_phase + 1) % 24;
+  layer_mark_dirty(cup_layer);
+  steam_timer = app_timer_register(125, steam_timer_callback, NULL);
+}
+
+static void steam_start(void)
+{
+  steam_stop();
+  steam_phase = 0;
+  steam_running = true;
+  if(cup_layer) {
+    layer_mark_dirty(cup_layer);
+  }
+  steam_timer = app_timer_register(125, steam_timer_callback, NULL);
+}
+
+static void steam_draw(GContext *ctx, int cx,
+                       const GPoint *points, size_t count,
+                       uint8_t offset)
+{
+  if(count < 2) {
+    return;
+  }
+
+  static const int8_t wave[] = {
+     0,  1,  1,  1,  2,  2,  2,  2,
+     2,  1,  1,  1,  0, -1, -1, -1,
+    -2, -2, -2, -2, -2, -1, -1, -1
+  };
+
+  int min_x = points[0].x;
+  int max_x = points[0].x;
+  int min_y = points[0].y;
+  int max_y = points[0].y;
+
+  for(size_t i = 1; i < count; ++i) {
+    if(points[i].x < min_x) min_x = points[i].x;
+    if(points[i].x > max_x) max_x = points[i].x;
+    if(points[i].y < min_y) min_y = points[i].y;
+    if(points[i].y > max_y) max_y = points[i].y;
+  }
+
+  int center_x = cx + (min_x + max_x) / 2;
+
+  for(int y = min_y + 1; y <= max_y; ++y) {
+    int phase0 = (y - 1 + steam_phase + offset) % 24;
+    int phase1 = (y + steam_phase + offset) % 24;
+
+    bool thin_tip = (y <= min_y + 3) || (y > max_y - 3);
+    graphics_context_set_stroke_width(ctx, thin_tip ? 1 : 2);
+
+    graphics_draw_line(ctx,
+      GPoint(center_x + wave[phase0], y - 1),
+      GPoint(center_x + wave[phase1], y));
+  }
+
+  graphics_context_set_stroke_width(ctx, 2);
+}
+
 static void cup_paint_callback(Layer *layer, GContext *ctx)
 {
   int cx = layer_get_bounds(layer).size.w / 2;
+
+  static const GPoint rim[] = {
+    {-26, 33}, {-24, 31}, {-19, 29}, {-10, 28},
+    {10, 28}, {19, 29}, {24, 31}, {26, 33},
+    {24, 35}, {19, 37}, {10, 38}, {-10, 38},
+    {-19, 37}, {-24, 35}, {-26, 33}
+  };
+
+  static const GPoint body[] = {
+    {-26, 33}, {-25, 39}, {-23, 45}, {-20, 50},
+    {-16, 54}, {-11, 57}, {-5, 58},
+    {5, 58}, {11, 57}, {16, 54},
+    {20, 50}, {23, 45}, {25, 39}, {26, 33}
+  };
+
+  static const GPoint handle[] = {
+    {26, 35}, {31, 35}, {35, 37}, {37, 40},
+    {37, 43}, {35, 46}, {31, 48}, {22, 49}
+  };
+
+  static const GPoint saucer[] = {
+    {-20, 53}, {-27, 54}, {-33, 56}, {-36, 59},
+    {-34, 61}, {-28, 63}, {-18, 65}, {-8, 66},
+    {8, 66}, {18, 65}, {28, 63}, {34, 61},
+    {36, 59}, {33, 56}, {27, 54}, {20, 53}
+  };
+
+  static GPoint saucer_band[] = {
+    {-36, 59}, {-34, 61}, {-28, 63}, {-18, 65},
+    {-8, 66}, {8, 66}, {18, 65}, {28, 63},
+    {34, 61}, {36, 59},
+    {29, 60}, {19, 62}, {8, 63}, {-8, 63},
+    {-19, 62}, {-29, 60}
+  };
+
+  static GPoint liquid[] = {
+    {-26, 33}, {-24, 31}, {-19, 29}, {-10, 28},
+    {10, 28}, {19, 29}, {24, 31}, {26, 33},
+    {24, 35}, {19, 37}, {10, 38}, {-10, 38},
+    {-19, 37}, {-24, 35}
+  };
+
+  static const GPoint steam_left[] = {
+    {-15, 24}, {-12, 20}, {-12, 16},
+    {-16, 12}, {-16, 8}, {-13, 5}
+  };
+
+  static const GPoint steam_middle[] = {
+    {0, 22}, {3, 18}, {3, 13},
+    {-1, 9}, {-1, 4}, {2, 1}
+  };
+
+  static const GPoint steam_right[] = {
+    {15, 24}, {18, 20}, {18, 16},
+    {14, 12}, {14, 8}, {17, 5}
+  };
+
   graphics_context_set_stroke_color(ctx, theme_foreground());
   graphics_context_set_stroke_width(ctx, 2);
 
-  graphics_draw_circle(ctx, GPoint(cx + 22, 35), 9);
   graphics_context_set_fill_color(ctx, theme_foreground());
-  graphics_fill_rect(ctx, GRect(cx - 23, 22, 44, 32),
-                     8, GCornersBottom);
+  cup_fill_shape(ctx, cx, saucer_band,
+    sizeof(saucer_band) / sizeof(saucer_band[0]));
 
-  graphics_context_set_stroke_color(ctx, theme_background());
-  graphics_draw_line(ctx, GPoint(cx - 18, 26), GPoint(cx + 16, 26));
+  bool finished = bar_total > 0 && bar_width >= bar_total;
+  uint8_t color_id = tea_colors[selected_entry];
+  GColor liquid_color = (color_id == 0 || color_id == 2)
+    ? GColorPastelYellow : tea_accent();
 
-  graphics_context_set_stroke_color(ctx, theme_foreground());
-  graphics_draw_line(ctx, GPoint(cx - 30, 60), GPoint(cx + 29, 60));
-  graphics_draw_line(ctx, GPoint(cx - 22, 64), GPoint(cx + 21, 64));
+  graphics_context_set_fill_color(ctx,
+    finished ? liquid_color : theme_background());
+  cup_fill_shape(ctx, cx, liquid,
+    sizeof(liquid) / sizeof(liquid[0]));
 
-  for(int i = -1; i <= 1; ++i) {
-    int x = cx + i * 13;
-    graphics_draw_line(ctx, GPoint(x, 17), GPoint(x - 2, 12));
-    graphics_draw_line(ctx, GPoint(x - 2, 12), GPoint(x + 2, 7));
-    graphics_draw_line(ctx, GPoint(x + 2, 7), GPoint(x, 2));
-  }
+  cup_draw_outline(ctx, cx, saucer,
+    sizeof(saucer) / sizeof(saucer[0]));
+  cup_draw_outline(ctx, cx, handle,
+    sizeof(handle) / sizeof(handle[0]));
+  cup_draw_outline(ctx, cx, body,
+    sizeof(body) / sizeof(body[0]));
+  cup_draw_outline(ctx, cx, rim,
+    sizeof(rim) / sizeof(rim[0]));
+
+  steam_draw(ctx, cx, steam_left,
+    sizeof(steam_left) / sizeof(steam_left[0]), 0);
+  steam_draw(ctx, cx, steam_middle,
+    sizeof(steam_middle) / sizeof(steam_middle[0]), 4);
+  steam_draw(ctx, cx, steam_right,
+    sizeof(steam_right) / sizeof(steam_right[0]), 8);
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
@@ -228,6 +405,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
   /* Une seule vibration de fin ; l'horloge continue ensuite. */
   if(elapsed_s >= total_s) {
     if(prev_s < total_s) {
+      layer_mark_dirty(cup_layer);
       static const uint32_t segments[] = {200, 150, 200};
       VibePattern pattern = {
         .durations = segments,
@@ -343,13 +521,16 @@ static void timer_window_appear(Window *window) {
   prev_s = -1;
   tick_handler(NULL, SECOND_UNIT);
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
+  steam_start();
 }
 
 static void timer_window_disappear(Window *window) {
+  steam_stop();
   tick_timer_service_unsubscribe();
 }
 
 static void timer_window_unload(Window *window) {
+  steam_stop();
   tick_timer_service_unsubscribe();
   text_layer_destroy(name_layer);
   text_layer_destroy(clock_layer);
@@ -421,14 +602,19 @@ static void message_received(DictionaryIterator *iter, void *context)
     tp = dict_find(iter, 2);
     if(!tp) { return; }
     count = tp->value->int32;
+    if(count < 1 || count > MAX_ENTRIES || idx >= count) {
+      return;
+    }
 
     tp = dict_find(iter, 3);
     if(!tp) { return; }
     strncpy(entries[idx].name, tp->value->cstring, sizeof(entries[0].name));
+    entries[idx].name[sizeof(entries[idx].name) - 1] = '\0';
 
     tp = dict_find(iter, 4);
     if(!tp) { return; }
     strncpy(entries[idx].content, tp->value->cstring, sizeof(entries[0].content));
+    entries[idx].content[sizeof(entries[idx].content) - 1] = '\0';
 
     tp = dict_find(iter, 5);
     if(!tp) { return; }
@@ -457,6 +643,29 @@ static void message_received(DictionaryIterator *iter, void *context)
     if(idx >= num_entries || idx+1 == count) {
       num_entries = idx + 1;
     }
+
+    /* Le téléphone envoie les thés dans l'ordre, un par message. */
+    if(idx + 1 == count) {
+      bool saved = true;
+      for(int i = 0; i < count; ++i) {
+        int written = persist_write_data(
+          STORE_ENTRY + i, &entries[i], sizeof(tea_entry));
+        if(written != (int)sizeof(tea_entry)) {
+          saved = false;
+          APP_LOG(APP_LOG_LEVEL_ERROR,
+            "Tea storage failed: %d (%d)", i, written);
+        }
+      }
+
+      if(saved) {
+        int written = persist_write_int(STORE_SIZE, count);
+        if(written != (int)sizeof(int32_t)) {
+          APP_LOG(APP_LOG_LEVEL_ERROR,
+            "Tea count storage failed: %d", written);
+        }
+      }
+    }
+
     menu_layer_reload_data(menu_layer);
     if(saved_current >=0 && saved_current < num_entries) {
       menu_layer_set_selected_index(menu_layer, (MenuIndex){.row=saved_current, .section=0}, MenuRowAlignCenter, false);
@@ -503,11 +712,21 @@ static void init(void) {
     app_message_outbox_send();
   }
   num_entries = persist_read_int(STORE_SIZE);
-
-  for(int i=0; i<num_entries; ++i) {
-    persist_read_data(STORE_ENTRY+i, entries+i, sizeof(tea_entry));
+  if(num_entries < 0 || num_entries > MAX_ENTRIES) {
+    num_entries = 0;
   }
-  if (num_entries == 0) {
+
+  for(int i = 0; i < num_entries; ++i) {
+    int bytes = persist_read_data(
+      STORE_ENTRY + i, &entries[i], sizeof(tea_entry));
+    if(bytes != (int)sizeof(tea_entry)) {
+      num_entries = 0;
+      break;
+    }
+    entries[i].name[sizeof(entries[i].name) - 1] = '\0';
+    entries[i].content[sizeof(entries[i].content) - 1] = '\0';
+  }
+  if(num_entries == 0) {
     num_entries = 1;
   }
 
