@@ -6,6 +6,7 @@ static MenuLayer *menu_layer;
 static TextLayer *name_layer;
 static Layer *progress_layer;
 static Layer *cup_layer;
+static Layer *separator_layer;
 static TextLayer *clock_layer;
 static TextLayer *duration_layer;
 static TextLayer *zero_layer;
@@ -110,9 +111,11 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer,
   GRect bounds = layer_get_bounds(cell_layer);
   bool selected = menu_cell_layer_is_highlighted(cell_layer);
 
-  graphics_context_set_fill_color(ctx, selected ? theme_foreground() : theme_background());
+  graphics_context_set_fill_color(ctx,
+    selected ? theme_foreground() : theme_background());
   graphics_fill_rect(ctx, bounds, 0, GCornerNone);
-  graphics_context_set_text_color(ctx, selected ? theme_background() : theme_foreground());
+  graphics_context_set_text_color(ctx,
+    selected ? theme_background() : theme_foreground());
 
   graphics_draw_text(ctx, t->name,
     fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD),
@@ -164,6 +167,12 @@ static void progress_paint_callback(Layer *layer, GContext *ctx)
         GPoint(x, bounds.size.h - inset - 1));
     }
   }
+}
+
+static void separator_paint_callback(Layer *layer, GContext *ctx)
+{
+  graphics_context_set_fill_color(ctx, theme_foreground());
+  graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
 }
 
 static void cup_paint_callback(Layer *layer, GContext *ctx)
@@ -275,6 +284,10 @@ static void timer_window_load(Window *window) {
   text_layer_set_text_color(clock_layer, tea_clock_foreground());
   layer_add_child(root, text_layer_get_layer(clock_layer));
 
+  separator_layer = layer_create(GRect(0, 56, w, 2));
+  layer_set_update_proc(separator_layer, separator_paint_callback);
+  layer_add_child(root, separator_layer);
+
   name_layer = text_layer_create(GRect(4, 59, w - 8, 37));
   text_layer_set_font(name_layer,
                      fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
@@ -344,6 +357,8 @@ static void timer_window_unload(Window *window) {
   text_layer_destroy(zero_layer);
   layer_destroy(progress_layer);
   layer_destroy(cup_layer);
+  layer_destroy(separator_layer);
+  separator_layer = NULL;
   clock_layer = NULL;
   name_layer = NULL;
   duration_layer = NULL;
@@ -367,6 +382,7 @@ static void apply_theme(void)
     text_layer_set_text_color(name_layer, theme_foreground());
     text_layer_set_text_color(duration_layer, theme_foreground());
     text_layer_set_text_color(zero_layer, theme_foreground());
+    layer_mark_dirty(separator_layer);
     layer_mark_dirty(cup_layer);
     layer_mark_dirty(progress_layer);
   }
