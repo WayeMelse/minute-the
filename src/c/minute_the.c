@@ -32,6 +32,17 @@ static int saved_current;
 
 #define PROGRESS_MARGIN 3
 #define MAX_ENTRIES 15
+#define STORE_THEME (STORE_BASE + 100)
+
+static bool light_theme;
+
+static GColor theme_background(void) {
+  return light_theme ? GColorWhite : GColorBlack;
+}
+
+static GColor theme_foreground(void) {
+  return light_theme ? GColorBlack : GColorWhite;
+}
 
 typedef struct tea_entry {
   uint8_t quarts_low;
@@ -47,10 +58,32 @@ static uint16_t menu_get_num_rows_callback(MenuLayer *menu, uint16_t section_ind
   return num_entries;
 }
 
-static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data)
+static int16_t menu_get_cell_height_callback(
+    MenuLayer *menu, MenuIndex *cell_index, void *data)
+{
+  return 70;
+}
+
+static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer,
+                                   MenuIndex *cell_index, void *data)
 {
   tea_entry *t = entries + cell_index->row;
-  menu_cell_basic_draw(ctx, cell_layer, t->name, t->content, NULL);
+  GRect bounds = layer_get_bounds(cell_layer);
+  bool selected = menu_cell_layer_is_highlighted(cell_layer);
+
+  graphics_context_set_fill_color(ctx, selected ? theme_foreground() : theme_background());
+  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
+  graphics_context_set_text_color(ctx, selected ? theme_background() : theme_foreground());
+
+  graphics_draw_text(ctx, t->name,
+    fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD),
+    GRect(8, 0, bounds.size.w - 16, 35),
+    GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+
+  graphics_draw_text(ctx, t->content,
+    fonts_get_system_font(FONT_KEY_GOTHIC_24),
+    GRect(8, 34, bounds.size.w - 16, 32),
+    GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
 }
 
 static void menu_select_callback(MenuLayer *menu, MenuIndex *cell_index, void *data)
@@ -67,9 +100,9 @@ static void progress_paint_callback(Layer *layer, GContext *ctx)
   int mark_high = entries[selected_entry].quarts_high;
 
   /* Bordure pleine : épaisseur déterministe de 3 pixels. */
-  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_context_set_fill_color(ctx, theme_foreground());
   graphics_fill_rect(ctx, bounds, 5, GCornersAll);
-  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_context_set_fill_color(ctx, theme_background());
   graphics_fill_rect(ctx,
     GRect(PROGRESS_MARGIN, PROGRESS_MARGIN, bar_total, h),
     2, GCornersAll);
@@ -81,7 +114,7 @@ static void progress_paint_callback(Layer *layer, GContext *ctx)
       2, GCornersAll);
   }
 
-  graphics_context_set_stroke_color(ctx, GColorWhite);
+  graphics_context_set_stroke_color(ctx, theme_foreground());
   graphics_context_set_stroke_width(ctx, 1);
   for(int i = 1; i < mark_high; ++i) {
     int x = PROGRESS_MARGIN + (bar_total * i) / mark_high;
@@ -97,18 +130,18 @@ static void progress_paint_callback(Layer *layer, GContext *ctx)
 static void cup_paint_callback(Layer *layer, GContext *ctx)
 {
   int cx = layer_get_bounds(layer).size.w / 2;
-  graphics_context_set_stroke_color(ctx, GColorWhite);
+  graphics_context_set_stroke_color(ctx, theme_foreground());
   graphics_context_set_stroke_width(ctx, 2);
 
   graphics_draw_circle(ctx, GPoint(cx + 22, 35), 9);
-  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_context_set_fill_color(ctx, theme_foreground());
   graphics_fill_rect(ctx, GRect(cx - 23, 22, 44, 32),
                      8, GCornersBottom);
 
-  graphics_context_set_stroke_color(ctx, GColorBlack);
+  graphics_context_set_stroke_color(ctx, theme_background());
   graphics_draw_line(ctx, GPoint(cx - 18, 26), GPoint(cx + 16, 26));
 
-  graphics_context_set_stroke_color(ctx, GColorWhite);
+  graphics_context_set_stroke_color(ctx, theme_foreground());
   graphics_draw_line(ctx, GPoint(cx - 30, 60), GPoint(cx + 29, 60));
   graphics_draw_line(ctx, GPoint(cx - 22, 64), GPoint(cx + 21, 64));
 
@@ -147,7 +180,12 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
   /* Une seule vibration de fin ; l'horloge continue ensuite. */
   if(elapsed_s >= total_s) {
     if(prev_s < total_s) {
-      vibes_short_pulse();
+      static const uint32_t segments[] = {200, 150, 200};
+      VibePattern pattern = {
+        .durations = segments,
+        .num_segments = 3
+      };
+      vibes_enqueue_custom_pattern(pattern);
     }
   } else if(prev_s >= 0 && prev_s < low_s && elapsed_s >= low_s) {
     vibes_short_pulse();
@@ -162,9 +200,14 @@ static void window_load(Window *window) {
   GRect bounds = layer_get_bounds(window_layer);
 
   menu_layer = menu_layer_create(bounds);
+  menu_layer_set_normal_colors(menu_layer,
+    theme_background(), theme_foreground());
+  menu_layer_set_highlight_colors(menu_layer,
+    theme_foreground(), theme_background());
 
   menu_layer_set_callbacks(menu_layer, 0, (MenuLayerCallbacks){
       .get_num_rows = menu_get_num_rows_callback,
+        .get_cell_height = menu_get_cell_height_callback,
         .draw_row = menu_draw_row_callback,
         .select_click = menu_select_callback
     });
@@ -178,7 +221,7 @@ static void window_unload(Window *window) {
 }
 
 static void timer_window_load(Window *window) {
-  window_set_background_color(window, GColorBlack);
+  window_set_background_color(window, theme_background());
   Layer *root = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(root);
   int w = bounds.size.w;
@@ -199,7 +242,7 @@ static void timer_window_load(Window *window) {
   text_layer_set_text_alignment(name_layer, GTextAlignmentCenter);
   text_layer_set_overflow_mode(name_layer, GTextOverflowModeTrailingEllipsis);
   text_layer_set_background_color(name_layer, GColorClear);
-  text_layer_set_text_color(name_layer, GColorWhite);
+  text_layer_set_text_color(name_layer, theme_foreground());
   layer_add_child(root, text_layer_get_layer(name_layer));
 
   cup_layer = layer_create(GRect(0, 94, w, 68));
@@ -216,7 +259,7 @@ static void timer_window_load(Window *window) {
                      fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   text_layer_set_text_alignment(duration_layer, GTextAlignmentRight);
   text_layer_set_background_color(duration_layer, GColorClear);
-  text_layer_set_text_color(duration_layer, GColorWhite);
+  text_layer_set_text_color(duration_layer, theme_foreground());
   layer_add_child(root, text_layer_get_layer(duration_layer));
 
   zero_layer = text_layer_create(GRect(12, h - 33, 40, 32));
@@ -224,7 +267,7 @@ static void timer_window_load(Window *window) {
                      fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   text_layer_set_text_alignment(zero_layer, GTextAlignmentLeft);
   text_layer_set_background_color(zero_layer, GColorClear);
-  text_layer_set_text_color(zero_layer, GColorWhite);
+  text_layer_set_text_color(zero_layer, theme_foreground());
   text_layer_set_text(zero_layer, "0");
   layer_add_child(root, text_layer_get_layer(zero_layer));
 }
@@ -261,6 +304,32 @@ static void timer_window_unload(Window *window) {
   text_layer_destroy(zero_layer);
   layer_destroy(progress_layer);
   layer_destroy(cup_layer);
+  clock_layer = NULL;
+  name_layer = NULL;
+  duration_layer = NULL;
+  zero_layer = NULL;
+  cup_layer = NULL;
+  progress_layer = NULL;
+}
+
+static void apply_theme(void)
+{
+  if(menu_layer) {
+    menu_layer_set_normal_colors(menu_layer,
+      theme_background(), theme_foreground());
+    menu_layer_set_highlight_colors(menu_layer,
+      theme_foreground(), theme_background());
+    layer_mark_dirty(menu_layer_get_layer(menu_layer));
+  }
+
+  if(timer_window && clock_layer) {
+    window_set_background_color(timer_window, theme_background());
+    text_layer_set_text_color(name_layer, theme_foreground());
+    text_layer_set_text_color(duration_layer, theme_foreground());
+    text_layer_set_text_color(zero_layer, theme_foreground());
+    layer_mark_dirty(cup_layer);
+    layer_mark_dirty(progress_layer);
+  }
 }
 
 static void message_received(DictionaryIterator *iter, void *context)
@@ -270,6 +339,16 @@ static void message_received(DictionaryIterator *iter, void *context)
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Invalid message");
     return;
   }
+  if(strcmp(tp->value->cstring, "t") == 0) {
+    Tuple *theme = dict_find(iter, 8);
+    if(theme) {
+      light_theme = theme->value->int32 != 0;
+      persist_write_int(STORE_THEME, light_theme ? 1 : 0);
+      apply_theme();
+    }
+    return;
+  }
+
   if(tp->value->cstring[0] == 'u') {
     /* Single config entry */
     int idx;
@@ -325,6 +404,8 @@ static void message_dropped(AppMessageResult reason, void *context)
 }
 
 static void init(void) {
+  light_theme = persist_exists(STORE_THEME)
+    && persist_read_int(STORE_THEME) != 0;
   num_entries = 0;
   for(int i=0; i<MAX_ENTRIES; ++i) {
     strcpy(entries[i].name, "Default tea");

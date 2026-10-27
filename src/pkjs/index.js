@@ -1,7 +1,8 @@
 var Clay = require('@rebble/clay');
 var clayConfig = require('./config');
 var defaults = require('./defaults');
-var clay = new Clay(clayConfig, null, { autoHandleEvents: false });
+var customClay = require('./custom-clay');
+var clay = new Clay(clayConfig, customClay, { autoHandleEvents: false });
 
 function val(s, k) {
   var x = s[k];
@@ -52,6 +53,11 @@ Pebble.addEventListener('appmessage', function() {
 
 function updateMenu(config) {
   var teas = JSON.parse(config);
+
+  msg_queue.push({
+    0: 't',
+    8: localStorage.getItem('themeLight') === '1' ? 1 : 0
+  });
   var count = 0;
   var i;
 
@@ -92,6 +98,12 @@ Pebble.addEventListener('webviewclosed', function(e) {
   }
 
   var settings = JSON.parse(decodeURIComponent(e.response));
+  var themeValue = val(settings, 'themeLight');
+  if (themeValue !== undefined) {
+    var isLight = themeValue === true || themeValue === 1 ||
+      themeValue === '1' || themeValue === 'true';
+    localStorage.setItem('themeLight', isLight ? '1' : '0');
+  }
   var teas = [];
 
   for (var i = 1; i <= defaults.length; i++) {

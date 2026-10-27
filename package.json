@@ -56,7 +56,8 @@
       "tea7Name",
       "tea7Content",
       "tea7Min",
-      "tea7Max"
+      "tea7Max",
+      "themeLight"
     ],
     "resources": {
       "media": [
