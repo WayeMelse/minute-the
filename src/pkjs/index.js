@@ -1,8 +1,10 @@
 var Clay = require('@rebble/clay');
 var clayConfig = require('./config');
-var defaults = require('./defaults');
+var getDefaults = require('./defaults');
+var i18n = require('./i18n');
+var defaults = [];
 var customClay = require('./custom-clay');
-var clay = new Clay(clayConfig, customClay, { autoHandleEvents: false });
+var clay;
 
 function val(s, k) {
   var x = s[k];
@@ -44,13 +46,15 @@ function defaultTeas() {
   var teas = [];
   defaults.forEach(function(t) {
     if (t.enabled) {
-      teas.push([true, t.name, t.content, t.min * 4, t.max * 4, defaultTeaColor(t.name)]);
+      teas.push([true, t.name, t.content, t.min * 4, t.max * 4, t.color]);
     }
   });
   return teas;
 }
 
 Pebble.addEventListener('ready', function() {
+  defaults = getDefaults();
+  clay = new Clay(clayConfig(), customClay, { autoHandleEvents: false });
   var config = localStorage.getItem('config');
 
   if (!config || config === 'CANCELLED') {
@@ -102,6 +106,8 @@ function updateMenu(config) {
 }
 
 Pebble.addEventListener('showConfiguration', function() {
+  defaults = getDefaults();
+  clay = new Clay(clayConfig(), customClay, { autoHandleEvents: false });
   var url = clay.generateUrl();
   console.log('Config URL: ' + url);
   Pebble.openURL(url);
@@ -132,7 +138,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
 
       teas.push([
         true,
-        val(settings, 'tea' + i + 'Name') || ('Thé ' + i),
+        val(settings, 'tea' + i + 'Name') || (i18n.get().tea + ' ' + i),
         val(settings, 'tea' + i + 'Content') || '',
         minMinutes * 4,
         maxMinutes * 4,

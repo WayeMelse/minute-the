@@ -1,5 +1,9 @@
-var defaults = require('./defaults');
-var defaultColors = ['0', '1', '1', '2', '2', '3', '4'];
+var getDefaults = require('./defaults');
+var i18n = require('./i18n');
+
+module.exports = function() {
+var defaults = getDefaults();
+var t = i18n.get();
 
 function minuteOptions(max) {
   var options = [];
@@ -17,78 +21,79 @@ var config = [
   {
     type: 'section',
     items: [
-      { type: 'heading', defaultValue: 'Apparence' },
+      { type: 'heading', defaultValue: t.appearance },
       {
         type: 'toggle',
         messageKey: 'themeLight',
-        label: 'Fond blanc',
-        description: 'Désactivé : fond noir. Activé : fond blanc.',
+        label: t.light,
+        description: t.themeHelp,
         defaultValue: false
       }
     ]
   },
   {
     type: 'text',
-    defaultValue: 'Une vibration à la première alerte, deux en fin d’infusion. Pour une seule alerte finale, choisissez deux durées identiques.'
+    defaultValue: t.alerts
   }
 ];
 
-defaults.forEach(function(t, i) {
+defaults.forEach(function(tea, i) {
   var n = i + 1;
 
   config.push({
     type: 'section',
     items: [
-      { type: 'heading', defaultValue: 'Thé ' + n },
+      { type: 'heading', defaultValue: t.tea + ' ' + n },
       {
         type: 'toggle',
         messageKey: 'tea' + n + 'Enabled',
-        label: 'Activer ce thé',
-        defaultValue: t.enabled
+        label: t.enabled,
+        defaultValue: tea.enabled
       },
       {
         type: 'input',
         messageKey: 'tea' + n + 'Name',
-        label: 'Nom',
-        defaultValue: t.name
+        label: t.name,
+        defaultValue: tea.name
       },
       {
         type: 'select',
         messageKey: 'tea' + n + 'Color',
-        label: 'Couleur du bandeau',
-        defaultValue: defaultColors[i],
+        label: t.color,
+        defaultValue: String(tea.color),
         options: [
-          { label: 'Blanc', value: '0' },
-          { label: 'Vert', value: '1' },
-          { label: 'Noir', value: '2' },
-          { label: 'Ambré', value: '3' },
-          { label: 'Jaune', value: '4' }
+          { label: t.white, value: '0' },
+          { label: t.green, value: '1' },
+          { label: t.black, value: '2' },
+          { label: t.amber, value: '3' },
+          { label: t.yellow, value: '4' }
         ]
       },
       {
         type: 'input',
         messageKey: 'tea' + n + 'Content',
-        label: 'Préparation',
-        defaultValue: t.content
+        label: t.preparation,
+        defaultValue: tea.content
       },
       {
         type: 'select',
         messageKey: 'tea' + n + 'Min',
-        label: 'Première alerte',
-        defaultValue: String(t.min),
+        label: t.first,
+        defaultValue: String(tea.min),
         options: minuteOptions(15)
       },
       {
         type: 'select',
         messageKey: 'tea' + n + 'Max',
-        label: 'Fin d’infusion',
-        defaultValue: String(t.max),
+        label: t.end,
+        defaultValue: String(tea.max),
         options: minuteOptions(20)
       }
     ]
   });
 });
 
-config.push({ type: 'submit', defaultValue: 'Enregistrer' });
+config.push({ type: 'submit', defaultValue: t.save });
 
-module.exports = config;
+return config;
+};

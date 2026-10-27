@@ -1,9 +1,23 @@
-module.exports = [
-  { name: 'Thé blanc',         content: '1 c. à s., 80-85 °C', min: 1, max: 3, enabled: false },
-  { name: 'Thé vert chinois',  content: '1 c. à c., 85 °C',    min: 3, max: 3, enabled: false },
-  { name: 'Thé vert japonais', content: '1 c. à c., 82 °C',    min: 2, max: 3, enabled: true },
-  { name: 'Thé noir',          content: '1 c. à c., 97 °C',    min: 3, max: 5, enabled: true },
-  { name: 'Darjeeling',        content: '1 c. à c., 85 °C',    min: 3, max: 3, enabled: true },
-  { name: 'Oolong',            content: '1 c. à c., 85-97 °C', min: 3, max: 5, enabled: true },
-  { name: 'Tisane',            content: '1 c. à s., 97 °C',    min: 5, max: 7, enabled: true }
-];
+var i18n = require('./i18n');
+
+module.exports = function() {
+  var t = i18n.get();
+  var temperatures = ['80-85', '85', '82', '97', '85', '85-97', '97'];
+  var minimums = [1, 3, 2, 3, 3, 3, 5];
+  var maximums = [3, 3, 3, 5, 3, 5, 7];
+  var colors = [0, 1, 1, 2, 2, 3, 4];
+  var teas = [];
+
+  for (var i = 0; i < 7; i++) {
+    teas.push({
+      name: t.teaNames[i],
+      content: t.spoons[(i === 0 || i === 6) ? 0 : 1] +
+        ', ' + temperatures[i] + ' °C',
+      min: minimums[i],
+      max: maximums[i],
+      enabled: i >= 2,
+      color: colors[i]
+    });
+  }
+  return teas;
+};
