@@ -1530,7 +1530,7 @@ LOAD /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin
  .note.gnu.build-id
                 0x00000084       0x24 linker stubs
 
-.text           0x000000a8      0xd84
+.text           0x000000a8      0xd9f
  *(.text)
  .text          0x000000a8       0x14 /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
  *(.text.*)
@@ -1548,341 +1548,341 @@ LOAD /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin
  .text.timer_window_appear
                 0x0000015c       0x90 src/c/minute_the.c.9.o
  .text.timer_callback
-                0x000001ec      0x174 src/c/minute_the.c.9.o
+                0x000001ec      0x184 src/c/minute_the.c.9.o
  .text.timer_window_load
-                0x00000360      0x1e0 src/c/minute_the.c.9.o
+                0x00000370      0x1e0 src/c/minute_the.c.9.o
  .text.progress_paint_callback
-                0x00000540      0x10c src/c/minute_the.c.9.o
+                0x00000550      0x10c src/c/minute_the.c.9.o
  .text.window_unload
-                0x0000064c       0x10 src/c/minute_the.c.9.o
+                0x0000065c       0x10 src/c/minute_the.c.9.o
  .text.window_load
-                0x0000065c       0x9c src/c/minute_the.c.9.o
+                0x0000066c       0x9c src/c/minute_the.c.9.o
  .text.menu_draw_row_callback
-                0x000006f8       0x2c src/c/minute_the.c.9.o
+                0x00000708       0x2c src/c/minute_the.c.9.o
  .text.message_received
-                0x00000724      0x148 src/c/minute_the.c.9.o
+                0x00000734      0x148 src/c/minute_the.c.9.o
  .text.startup.main
-                0x0000086c      0x1f0 src/c/minute_the.c.9.o
-                0x0000086c                main
+                0x0000087c      0x1f0 src/c/minute_the.c.9.o
+                0x0000087c                main
  .text.app_event_loop
-                0x00000a5c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000a5c                app_event_loop
- .text.app_log  0x00000a68        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000a68                app_log
+                0x00000a6c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000a6c                app_event_loop
+ .text.app_log  0x00000a78        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000a78                app_log
  .text.app_message_open
-                0x00000a74        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000a74                app_message_open
+                0x00000a84        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000a84                app_message_open
  .text.app_timer_cancel
-                0x00000a80        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000a80                app_timer_cancel
+                0x00000a90        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000a90                app_timer_cancel
  .text.app_timer_register
-                0x00000a8c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000a8c                app_timer_register
+                0x00000a9c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000a9c                app_timer_register
  .text.bitmap_layer_create
-                0x00000a98        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000a98                bitmap_layer_create
+                0x00000aa8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000aa8                bitmap_layer_create
  .text.bitmap_layer_destroy
-                0x00000aa4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000aa4                bitmap_layer_destroy
+                0x00000ab4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000ab4                bitmap_layer_destroy
  .text.bitmap_layer_get_layer
-                0x00000ab0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000ab0                bitmap_layer_get_layer
+                0x00000ac0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000ac0                bitmap_layer_get_layer
  .text.bitmap_layer_set_alignment
-                0x00000abc        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000abc                bitmap_layer_set_alignment
+                0x00000acc        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000acc                bitmap_layer_set_alignment
  .text.bitmap_layer_set_bitmap
-                0x00000ac8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000ac8                bitmap_layer_set_bitmap
+                0x00000ad8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000ad8                bitmap_layer_set_bitmap
  .text.bitmap_layer_set_compositing_mode
-                0x00000ad4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000ad4                bitmap_layer_set_compositing_mode
+                0x00000ae4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000ae4                bitmap_layer_set_compositing_mode
  .text.dict_find
-                0x00000ae0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000ae0                dict_find
+                0x00000af0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000af0                dict_find
  .text.dict_write_cstring
-                0x00000aec        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000aec                dict_write_cstring
+                0x00000afc        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000afc                dict_write_cstring
  .text.fonts_get_system_font
-                0x00000af8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000af8                fonts_get_system_font
+                0x00000b08        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b08                fonts_get_system_font
  .text.gbitmap_create_with_resource
-                0x00000b04        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b04                gbitmap_create_with_resource
+                0x00000b14        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b14                gbitmap_create_with_resource
  .text.gbitmap_destroy
-                0x00000b10        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b10                gbitmap_destroy
+                0x00000b20        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b20                gbitmap_destroy
  .text.graphics_draw_line
-                0x00000b1c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b1c                graphics_draw_line
+                0x00000b2c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b2c                graphics_draw_line
  .text.graphics_draw_rect
-                0x00000b28        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b28                graphics_draw_rect
+                0x00000b38        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b38                graphics_draw_rect
  .text.graphics_fill_rect
-                0x00000b34        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b34                graphics_fill_rect
+                0x00000b44        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b44                graphics_fill_rect
  .text.layer_add_child
-                0x00000b40        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b40                layer_add_child
+                0x00000b50        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b50                layer_add_child
  .text.layer_create
-                0x00000b4c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b4c                layer_create
+                0x00000b5c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b5c                layer_create
  .text.layer_destroy
-                0x00000b58        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b58                layer_destroy
+                0x00000b68        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b68                layer_destroy
  .text.layer_get_bounds
-                0x00000b64        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b64                layer_get_bounds
+                0x00000b74        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b74                layer_get_bounds
  .text.layer_get_frame
-                0x00000b70        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b70                layer_get_frame
+                0x00000b80        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b80                layer_get_frame
  .text.layer_mark_dirty
-                0x00000b7c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b7c                layer_mark_dirty
+                0x00000b8c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b8c                layer_mark_dirty
  .text.layer_set_update_proc
-                0x00000b88        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b88                layer_set_update_proc
- .text.memset   0x00000b94        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000b94                memset
+                0x00000b98        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000b98                layer_set_update_proc
+ .text.memset   0x00000ba4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000ba4                memset
  .text.menu_cell_basic_draw
-                0x00000ba0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000ba0                menu_cell_basic_draw
+                0x00000bb0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000bb0                menu_cell_basic_draw
  .text.menu_layer_destroy
-                0x00000bac        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000bac                menu_layer_destroy
+                0x00000bbc        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000bbc                menu_layer_destroy
  .text.menu_layer_get_layer
-                0x00000bb8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000bb8                menu_layer_get_layer
+                0x00000bc8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000bc8                menu_layer_get_layer
  .text.menu_layer_reload_data
-                0x00000bc4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000bc4                menu_layer_reload_data
+                0x00000bd4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000bd4                menu_layer_reload_data
  .text.menu_layer_set_click_config_onto_window
-                0x00000bd0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000bd0                menu_layer_set_click_config_onto_window
+                0x00000be0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000be0                menu_layer_set_click_config_onto_window
  .text.menu_layer_set_selected_index
-                0x00000bdc        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000bdc                menu_layer_set_selected_index
+                0x00000bec        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000bec                menu_layer_set_selected_index
  .text.persist_exists
-                0x00000be8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000be8                persist_exists
+                0x00000bf8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000bf8                persist_exists
  .text.persist_read_int
-                0x00000bf4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000bf4                persist_read_int
+                0x00000c04        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c04                persist_read_int
  .text.persist_write_int
-                0x00000c00        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c00                persist_write_int
+                0x00000c10        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c10                persist_write_int
  .text.snprintf
-                0x00000c0c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c0c                snprintf
- .text.strcpy   0x00000c18        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c18                strcpy
- .text.strncpy  0x00000c24        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c24                strncpy
+                0x00000c1c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c1c                snprintf
+ .text.strcpy   0x00000c28        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c28                strcpy
+ .text.strncpy  0x00000c34        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c34                strncpy
  .text.vibes_short_pulse
-                0x00000c30        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c30                vibes_short_pulse
+                0x00000c40        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c40                vibes_short_pulse
  .text.window_create
-                0x00000c3c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c3c                window_create
+                0x00000c4c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c4c                window_create
  .text.window_destroy
-                0x00000c48        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c48                window_destroy
+                0x00000c58        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c58                window_destroy
  .text.window_get_root_layer
-                0x00000c54        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c54                window_get_root_layer
+                0x00000c64        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c64                window_get_root_layer
  .text.window_set_window_handlers
-                0x00000c60        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c60                window_set_window_handlers
+                0x00000c70        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c70                window_set_window_handlers
  .text.window_stack_pop_all
-                0x00000c6c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c6c                window_stack_pop_all
+                0x00000c7c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c7c                window_stack_pop_all
  .text.window_stack_push
-                0x00000c78        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c78                window_stack_push
+                0x00000c88        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c88                window_stack_push
  .text.app_message_inbox_size_maximum
-                0x00000c84        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c84                app_message_inbox_size_maximum
+                0x00000c94        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000c94                app_message_inbox_size_maximum
  .text.app_message_outbox_begin
-                0x00000c90        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c90                app_message_outbox_begin
+                0x00000ca0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000ca0                app_message_outbox_begin
  .text.app_message_outbox_send
-                0x00000c9c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000c9c                app_message_outbox_send
+                0x00000cac        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000cac                app_message_outbox_send
  .text.app_message_register_inbox_dropped
-                0x00000ca8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000ca8                app_message_register_inbox_dropped
+                0x00000cb8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000cb8                app_message_register_inbox_dropped
  .text.app_message_register_inbox_received
-                0x00000cb4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000cb4                app_message_register_inbox_received
+                0x00000cc4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000cc4                app_message_register_inbox_received
  .text.persist_read_data
-                0x00000cc0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000cc0                persist_read_data
+                0x00000cd0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000cd0                persist_read_data
  .text.graphics_context_set_fill_color
-                0x00000ccc        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000ccc                graphics_context_set_fill_color
+                0x00000cdc        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000cdc                graphics_context_set_fill_color
  .text.graphics_context_set_stroke_color
-                0x00000cd8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000cd8                graphics_context_set_stroke_color
+                0x00000ce8        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000ce8                graphics_context_set_stroke_color
  .text.window_set_background_color
-                0x00000ce4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000ce4                window_set_background_color
+                0x00000cf4        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000cf4                window_set_background_color
  .text.menu_layer_create
-                0x00000cf0        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000cf0                menu_layer_create
+                0x00000d00        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000d00                menu_layer_create
  .text.text_layer_create
-                0x00000cfc        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000cfc                text_layer_create
+                0x00000d0c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000d0c                text_layer_create
  .text.text_layer_destroy
-                0x00000d08        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000d08                text_layer_destroy
+                0x00000d18        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000d18                text_layer_destroy
  .text.text_layer_get_layer
-                0x00000d14        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000d14                text_layer_get_layer
+                0x00000d24        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000d24                text_layer_get_layer
  .text.text_layer_set_background_color
-                0x00000d20        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000d20                text_layer_set_background_color
+                0x00000d30        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000d30                text_layer_set_background_color
  .text.text_layer_set_font
-                0x00000d2c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000d2c                text_layer_set_font
+                0x00000d3c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000d3c                text_layer_set_font
  .text.text_layer_set_text
-                0x00000d38        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000d38                text_layer_set_text
+                0x00000d48        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000d48                text_layer_set_text
  .text.text_layer_set_text_alignment
-                0x00000d44        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000d44                text_layer_set_text_alignment
+                0x00000d54        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000d54                text_layer_set_text_alignment
  .text.text_layer_set_text_color
-                0x00000d50        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000d50                text_layer_set_text_color
+                0x00000d60        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000d60                text_layer_set_text_color
  .text.menu_layer_set_callbacks
-                0x00000d5c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000d5c                menu_layer_set_callbacks
- .text.time_ms  0x00000d68        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
-                0x00000d68                time_ms
+                0x00000d6c        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000d6c                menu_layer_set_callbacks
+ .text.time_ms  0x00000d78        0xc /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+                0x00000d78                time_ms
  *(.rodata)
  *(.rodata*)
  .rodata.timer_callback.str1.1
-                0x00000d74       0xb8 src/c/minute_the.c.9.o
-                                  0x8 (size before relaxing)
+                0x00000d84       0xc3 src/c/minute_the.c.9.o
+                                 0x20 (size before relaxing)
  .rodata.timer_window_load.str1.1
-                0x00000e2c       0x4c src/c/minute_the.c.9.o
+                0x00000e47       0x4c src/c/minute_the.c.9.o
  .rodata.message_received.str1.1
-                0x00000e2c       0x1d src/c/minute_the.c.9.o
+                0x00000e47       0x10 src/c/minute_the.c.9.o
  .rodata.main.str1.1
-                0x00000e2c       0x49 src/c/minute_the.c.9.o
+                0x00000e47       0x49 src/c/minute_the.c.9.o
 
-.glue_7         0x00000e2c        0x0
- .glue_7        0x00000e2c        0x0 linker stubs
+.glue_7         0x00000e48        0x0
+ .glue_7        0x00000e48        0x0 linker stubs
 
-.glue_7t        0x00000e2c        0x0
- .glue_7t       0x00000e2c        0x0 linker stubs
+.glue_7t        0x00000e48        0x0
+ .glue_7t       0x00000e48        0x0 linker stubs
 
-.vfp11_veneer   0x00000e2c        0x0
- .vfp11_veneer  0x00000e2c        0x0 linker stubs
+.vfp11_veneer   0x00000e48        0x0
+ .vfp11_veneer  0x00000e48        0x0 linker stubs
 
-.v4_bx          0x00000e2c        0x0
- .v4_bx         0x00000e2c        0x0 linker stubs
+.v4_bx          0x00000e48        0x0
+ .v4_bx         0x00000e48        0x0 linker stubs
 
-.init           0x00000e2c        0x4
- .init          0x00000e2c        0x4 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crti.o
-                0x00000e2c                _init
+.init           0x00000e48        0x4
+ .init          0x00000e48        0x4 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crti.o
+                0x00000e48                _init
 
-.fini           0x00000e30        0x4
- .fini          0x00000e30        0x4 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crti.o
-                0x00000e30                _fini
+.fini           0x00000e4c        0x4
+ .fini          0x00000e4c        0x4 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crti.o
+                0x00000e4c                _fini
 
-.iplt           0x00000e34        0x0
- .iplt          0x00000e34        0x0 src/c/minute_the.c.9.o
+.iplt           0x00000e50        0x0
+ .iplt          0x00000e50        0x0 src/c/minute_the.c.9.o
 
-.rel.dyn        0x00000e34        0x0
- .rel.iplt      0x00000e34        0x0 src/c/minute_the.c.9.o
- .rel.got       0x00000e34        0x0 src/c/minute_the.c.9.o
+.rel.dyn        0x00000e50        0x0
+ .rel.iplt      0x00000e50        0x0 src/c/minute_the.c.9.o
+ .rel.got       0x00000e50        0x0 src/c/minute_the.c.9.o
 
-.data           0x00000e34       0x10
+.data           0x00000e50       0x10
  *(.data)
- .data          0x00000e34        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crti.o
- .data          0x00000e34        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crtbegin.o
- .data          0x00000e34        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/crt0.o
- .data          0x00000e34       0x10 src/c/minute_the.c.9.o
- .data          0x00000e44        0x0 emery/appinfo.auto.c.9.o
- .data          0x00000e44        0x0 emery/src/resource_ids.auto.c.9.o
- .data          0x00000e44        0x0 src/message_keys.auto.c.9.o
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-atexit.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-exit.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-findfp.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-fwalk.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-stdio.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-closer.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-reent.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-impure.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-lseekr.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-readr.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-writer.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-init.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-fini.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-lock.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-__atexit.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-__call_atexit.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-freer.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-mallocr.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-mlock.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-fclose.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-fflush.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-sbrkr.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-sysconf.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-errno.o)
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crtend.o
- .data          0x00000e44        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crtn.o
+ .data          0x00000e50        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crti.o
+ .data          0x00000e50        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crtbegin.o
+ .data          0x00000e50        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/crt0.o
+ .data          0x00000e50       0x10 src/c/minute_the.c.9.o
+ .data          0x00000e60        0x0 emery/appinfo.auto.c.9.o
+ .data          0x00000e60        0x0 emery/src/resource_ids.auto.c.9.o
+ .data          0x00000e60        0x0 src/message_keys.auto.c.9.o
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a(tmpwf63z9bbpebble.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-atexit.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-exit.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-findfp.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-fwalk.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-stdio.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-closer.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-reent.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-impure.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-lseekr.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-readr.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-writer.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-init.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-fini.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-lock.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-__atexit.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-__call_atexit.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-freer.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-mallocr.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-mlock.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-fclose.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-fflush.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-sbrkr.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-sysconf.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-errno.o)
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crtend.o
+ .data          0x00000e60        0x0 /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crtn.o
  *(.data.*)
 
-.igot.plt       0x00000e44        0x0
- .igot.plt      0x00000e44        0x0 src/c/minute_the.c.9.o
+.igot.plt       0x00000e60        0x0
+ .igot.plt      0x00000e60        0x0 src/c/minute_the.c.9.o
 
-.got            0x00000e44        0x4
- .got           0x00000e44        0x4 src/c/minute_the.c.9.o
+.got            0x00000e60        0x4
+ .got           0x00000e60        0x4 src/c/minute_the.c.9.o
 
-.got.plt        0x00000e48        0xc
- .got.plt       0x00000e48        0xc src/c/minute_the.c.9.o
-                0x00000e48                _GLOBAL_OFFSET_TABLE_
+.got.plt        0x00000e64        0xc
+ .got.plt       0x00000e64        0xc src/c/minute_the.c.9.o
+                0x00000e64                _GLOBAL_OFFSET_TABLE_
 
-.bss            0x00000e54      0x35c
+.bss            0x00000e70      0x35c
  *(.bss)
  *(.bss.*)
- .bss.image     0x00000e54        0x4 src/c/minute_the.c.9.o
- .bss.timer     0x00000e58        0x4 src/c/minute_the.c.9.o
+ .bss.image     0x00000e70        0x4 src/c/minute_the.c.9.o
+ .bss.timer     0x00000e74        0x4 src/c/minute_the.c.9.o
  .bss.saved_current
-                0x00000e5c        0x4 src/c/minute_the.c.9.o
+                0x00000e78        0x4 src/c/minute_the.c.9.o
  .bss.bar_total
-                0x00000e60        0x4 src/c/minute_the.c.9.o
+                0x00000e7c        0x4 src/c/minute_the.c.9.o
  .bss.bar_width
-                0x00000e64        0x4 src/c/minute_the.c.9.o
+                0x00000e80        0x4 src/c/minute_the.c.9.o
  .bss.time_start
-                0x00000e68        0x4 src/c/minute_the.c.9.o
- .bss.selected_entry
-                0x00000e6c        0x4 src/c/minute_the.c.9.o
- .bss.num_entries
-                0x00000e70        0x4 src/c/minute_the.c.9.o
- .bss.prev_elapsedms
-                0x00000e74        0x4 src/c/minute_the.c.9.o
- .bss.start_ms  0x00000e78        0x2 src/c/minute_the.c.9.o
- .bss.time_buf  0x00000e7a        0x8 src/c/minute_the.c.9.o
- *fill*         0x00000e82        0x2 
- .bss.time_layer
                 0x00000e84        0x4 src/c/minute_the.c.9.o
- .bss.image_layer
+ .bss.selected_entry
                 0x00000e88        0x4 src/c/minute_the.c.9.o
- .bss.progress_layer
+ .bss.num_entries
                 0x00000e8c        0x4 src/c/minute_the.c.9.o
- .bss.content_layer
+ .bss.prev_elapsedms
                 0x00000e90        0x4 src/c/minute_the.c.9.o
+ .bss.start_ms  0x00000e94        0x2 src/c/minute_the.c.9.o
+ .bss.time_buf  0x00000e96        0x8 src/c/minute_the.c.9.o
+ *fill*         0x00000e9e        0x2 
+ .bss.time_layer
+                0x00000ea0        0x4 src/c/minute_the.c.9.o
+ .bss.image_layer
+                0x00000ea4        0x4 src/c/minute_the.c.9.o
+ .bss.progress_layer
+                0x00000ea8        0x4 src/c/minute_the.c.9.o
+ .bss.content_layer
+                0x00000eac        0x4 src/c/minute_the.c.9.o
  .bss.name_layer
-                0x00000e94        0x4 src/c/minute_the.c.9.o
+                0x00000eb0        0x4 src/c/minute_the.c.9.o
  .bss.menu_layer
-                0x00000e98        0x4 src/c/minute_the.c.9.o
+                0x00000eb4        0x4 src/c/minute_the.c.9.o
  .bss.timer_window
-                0x00000e9c        0x4 src/c/minute_the.c.9.o
- .bss.window    0x00000ea0        0x4 src/c/minute_the.c.9.o
- COMMON         0x00000ea4      0x30c src/c/minute_the.c.9.o
-                0x00000ea4                entries
+                0x00000eb8        0x4 src/c/minute_the.c.9.o
+ .bss.window    0x00000ebc        0x4 src/c/minute_the.c.9.o
+ COMMON         0x00000ec0      0x30c src/c/minute_the.c.9.o
+                0x00000ec0                entries
 
 DISCARD
  libc.a(*)
@@ -1999,11 +1999,11 @@ LOAD /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin
  .comment       0x00000039       0x3a /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a(libc_a-errno.o)
  .comment       0x00000039       0x3a /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/crtend.o
 
-.debug_info     0x00000000     0x261e
- .debug_info    0x00000000     0x20d4 src/c/minute_the.c.9.o
- .debug_info    0x000020d4      0x33e emery/appinfo.auto.c.9.o
- .debug_info    0x00002412       0x8f emery/src/resource_ids.auto.c.9.o
- .debug_info    0x000024a1      0x17d src/message_keys.auto.c.9.o
+.debug_info     0x00000000     0x25c5
+ .debug_info    0x00000000     0x207b src/c/minute_the.c.9.o
+ .debug_info    0x0000207b      0x33e emery/appinfo.auto.c.9.o
+ .debug_info    0x000023b9       0x8f emery/src/resource_ids.auto.c.9.o
+ .debug_info    0x00002448      0x17d src/message_keys.auto.c.9.o
 
 .debug_abbrev   0x00000000      0x639
  .debug_abbrev  0x00000000      0x4ee src/c/minute_the.c.9.o
@@ -2012,9 +2012,9 @@ LOAD /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin
  .debug_abbrev  0x000005ef       0x4a src/message_keys.auto.c.9.o
 
 .debug_loclists
-                0x00000000      0x628
+                0x00000000      0x5de
  .debug_loclists
-                0x00000000      0x628 src/c/minute_the.c.9.o
+                0x00000000      0x5de src/c/minute_the.c.9.o
 
 .debug_aranges  0x00000000       0xd0
  .debug_aranges
@@ -2031,18 +2031,18 @@ LOAD /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin
  .debug_rnglists
                 0x00000000       0xfb src/c/minute_the.c.9.o
 
-.debug_line     0x00000000      0xee1
- .debug_line    0x00000000      0xb16 src/c/minute_the.c.9.o
- .debug_line    0x00000b16      0x183 emery/appinfo.auto.c.9.o
- .debug_line    0x00000c99      0x127 emery/src/resource_ids.auto.c.9.o
- .debug_line    0x00000dc0      0x121 src/message_keys.auto.c.9.o
+.debug_line     0x00000000      0xeee
+ .debug_line    0x00000000      0xb23 src/c/minute_the.c.9.o
+ .debug_line    0x00000b23      0x183 emery/appinfo.auto.c.9.o
+ .debug_line    0x00000ca6      0x127 emery/src/resource_ids.auto.c.9.o
+ .debug_line    0x00000dcd      0x121 src/message_keys.auto.c.9.o
 
-.debug_str      0x00000000     0x165e
- .debug_str     0x00000000     0x165e src/c/minute_the.c.9.o
-                               0x1297 (size before relaxing)
- .debug_str     0x0000165e      0x4c6 emery/appinfo.auto.c.9.o
- .debug_str     0x0000165e      0x184 emery/src/resource_ids.auto.c.9.o
- .debug_str     0x0000165e      0x2c1 src/message_keys.auto.c.9.o
+.debug_str      0x00000000     0x1654
+ .debug_str     0x00000000     0x1654 src/c/minute_the.c.9.o
+                               0x128d (size before relaxing)
+ .debug_str     0x00001654      0x4c6 emery/appinfo.auto.c.9.o
+ .debug_str     0x00001654      0x184 emery/src/resource_ids.auto.c.9.o
+ .debug_str     0x00001654      0x2c1 src/message_keys.auto.c.9.o
 
 .debug_frame    0x00000000      0x1f8
  .debug_frame   0x00000000      0x1f8 src/c/minute_the.c.9.o

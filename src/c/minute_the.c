@@ -90,9 +90,13 @@ static void timer_callback(void *data)
   int mark_high = entries[selected_entry].quarts_high;
   
   int elapsedms = (int)nowms - (int)start_ms + 1000 * (int)(now - time_start);
+  if(elapsedms < prev_elapsedms) {
+    elapsedms = prev_elapsedms;
+  }
   if(elapsedms < 0) {
     elapsedms = 0;
   }
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "elapsed=%d", elapsedms);
 
   bar_width = (bar_total * elapsedms) / (mark_high * 15000);
   int remaining = mark_high * 15 - elapsedms / 1000;
@@ -107,14 +111,7 @@ static void timer_callback(void *data)
     timer = 0;
     vibes_short_pulse();
   } else {
-    int nextms = ((bar_width+1) * mark_high * 15000) / bar_total - elapsedms;
-    if(nextms <= 0) {
-      nextms = 1;
-    }
-    int to_second = 1000 - (elapsedms % 1000);
-    if(nextms > to_second) {
-      nextms = to_second;
-    }
+    int nextms = 1000 - (elapsedms % 1000) + 30;
     int mark_low = entries[selected_entry].quarts_low;
     if(prev_elapsedms >= 0 && prev_elapsedms < mark_low * 15000 && elapsedms >= mark_low * 15000) {
       vibes_short_pulse();
