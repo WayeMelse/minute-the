@@ -1,0 +1,38 @@
+{
+  "name": "minute-the",
+  "author": "WayeM",
+  "version": "1.0.0",
+  "keywords": [
+    "pebble-app"
+  ],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Minute Th\u00e9",
+    "uuid": "766609f1-4d43-4bc0-89ad-88c795910f8e",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "emery"
+    ],
+    "watchapp": {
+      "watchface": false
+    },
+    "messageKeys": [
+      "dummy"
+    ],
+    "resources": {
+      "media": [
+        {
+          "type": "png",
+          "name": "IMAGE_TEA",
+          "file": "images/tea.png",
+          "menuIcon": true
+        }
+      ]
+    },
+    "capabilities": [
+      "configurable"
+    ]
+  }
+}

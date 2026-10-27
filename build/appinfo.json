@@ -1,0 +1,36 @@
+{
+    "displayName": "Minute Th\u00e9",
+    "uuid": "766609f1-4d43-4bc0-89ad-88c795910f8e",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+        "emery"
+    ],
+    "watchapp": {
+        "watchface": false
+    },
+    "messageKeys": {
+        "dummy": 10000
+    },
+    "resources": {
+        "media": [
+            {
+                "type": "png",
+                "name": "IMAGE_TEA",
+                "file": "images/tea.png",
+                "menuIcon": true
+            }
+        ]
+    },
+    "capabilities": [
+        "configurable"
+    ],
+    "name": "minute-the",
+    "shortName": "Minute Th\u00e9",
+    "longName": "Minute Th\u00e9",
+    "versionLabel": "1.0.0",
+    "companyName": "WayeM",
+    "appKeys": {
+        "dummy": 10000
+    }
+}
