@@ -4,13 +4,13 @@ static Window *window;
 static Window *timer_window;
 static MenuLayer *menu_layer;
 static TextLayer *name_layer;
-static TextLayer *content_layer;
 static Layer *progress_layer;
-static BitmapLayer *image_layer;
-static TextLayer *time_layer;
-static char time_buf[8];
-static TextLayer *remain_layer;
-static char remain_buf[8];
+static Layer *cup_layer;
+static TextLayer *clock_layer;
+static TextLayer *duration_layer;
+static TextLayer *zero_layer;
+static char clock_buf[12];
+static char duration_buf[16];
 static time_t start_s;
 static int prev_s;
 
@@ -21,7 +21,6 @@ static int bar_total;
 
 static int saved_current;
 
-static GBitmap *image;
 
 #define STORAGE_VERSION 2
 
@@ -31,7 +30,7 @@ static GBitmap *image;
 #define STORE_SIZE 3 + STORE_BASE
 #define STORE_ENTRY 4 + STORE_BASE
 
-#define PROGRESS_MARGIN 2
+#define PROGRESS_MARGIN 3
 #define MAX_ENTRIES 15
 
 typedef struct tea_entry {
@@ -63,35 +62,79 @@ static void menu_select_callback(MenuLayer *menu, MenuIndex *cell_index, void *d
 static void progress_paint_callback(Layer *layer, GContext *ctx)
 {
   GRect bounds = layer_get_bounds(layer);
-  graphics_context_set_stroke_color(ctx, GColorWhite);
-  graphics_context_set_fill_color(ctx, GColorWhite);
-  graphics_draw_rect(ctx, bounds);
-  /* Checks */
-  int h = bounds.size.h - PROGRESS_MARGIN * 2;
+  int h = bounds.size.h - 2 * PROGRESS_MARGIN;
   int mark_low = entries[selected_entry].quarts_low;
   int mark_high = entries[selected_entry].quarts_high;
 
-  graphics_fill_rect(ctx, GRect(PROGRESS_MARGIN, PROGRESS_MARGIN, bar_width, h), 0, GCornerNone);
+  /* Bordure pleine : épaisseur déterministe de 3 pixels. */
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_fill_rect(ctx, bounds, 5, GCornersAll);
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_fill_rect(ctx,
+    GRect(PROGRESS_MARGIN, PROGRESS_MARGIN, bar_total, h),
+    2, GCornersAll);
 
-  for(int i=1; i<mark_high; ++i) {
+  graphics_context_set_fill_color(ctx, GColorBrightGreen);
+  if(bar_width > 0) {
+    graphics_fill_rect(ctx,
+      GRect(PROGRESS_MARGIN, PROGRESS_MARGIN, bar_width, h),
+      2, GCornersAll);
+  }
+
+  graphics_context_set_stroke_color(ctx, GColorWhite);
+  graphics_context_set_stroke_width(ctx, 1);
+  for(int i = 1; i < mark_high; ++i) {
     int x = PROGRESS_MARGIN + (bar_total * i) / mark_high;
-    if(x >= bar_width) { /* Why draw it, if unneeded */
-      int size = (i == mark_low) ? 0 : ((i % 4) ? 7 * h / 16 : h / 4);
-      graphics_draw_line(ctx, GPoint(x, size+2), GPoint(x, bounds.size.h - size - 3));
+    if(x >= PROGRESS_MARGIN + bar_width) {
+      int inset = (i == mark_low) ? 4 : ((i % 4) ? 10 : 7);
+      graphics_draw_line(ctx,
+        GPoint(x, inset),
+        GPoint(x, bounds.size.h - inset - 1));
     }
+  }
+}
+
+static void cup_paint_callback(Layer *layer, GContext *ctx)
+{
+  int cx = layer_get_bounds(layer).size.w / 2;
+  graphics_context_set_stroke_color(ctx, GColorWhite);
+  graphics_context_set_stroke_width(ctx, 2);
+
+  graphics_draw_circle(ctx, GPoint(cx + 22, 35), 9);
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_fill_rect(ctx, GRect(cx - 23, 22, 44, 32),
+                     8, GCornersBottom);
+
+  graphics_context_set_stroke_color(ctx, GColorBlack);
+  graphics_draw_line(ctx, GPoint(cx - 18, 26), GPoint(cx + 16, 26));
+
+  graphics_context_set_stroke_color(ctx, GColorWhite);
+  graphics_draw_line(ctx, GPoint(cx - 30, 60), GPoint(cx + 29, 60));
+  graphics_draw_line(ctx, GPoint(cx - 22, 64), GPoint(cx + 21, 64));
+
+  for(int i = -1; i <= 1; ++i) {
+    int x = cx + i * 13;
+    graphics_draw_line(ctx, GPoint(x, 17), GPoint(x - 2, 12));
+    graphics_draw_line(ctx, GPoint(x - 2, 12), GPoint(x + 2, 7));
+    graphics_draw_line(ctx, GPoint(x + 2, 7), GPoint(x, 2));
   }
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
 {
-  int mark_high = entries[selected_entry].quarts_high;
-  int mark_low = entries[selected_entry].quarts_low;
-  int total_s = mark_high * 15;
+  time_t now = time(NULL);
+  struct tm *local = localtime(&now);
+  strftime(clock_buf, sizeof(clock_buf),
+           clock_is_24h_style() ? "%H:%M" : "%I:%M", local);
+  text_layer_set_text(clock_layer, clock_buf);
+
+  int total_s = entries[selected_entry].quarts_high * 15;
+  int low_s = entries[selected_entry].quarts_low * 15;
   if(total_s <= 0) {
     total_s = 15;
   }
 
-  int elapsed_s = (int)(time(NULL) - start_s);
+  int elapsed_s = (int)(now - start_s);
   if(elapsed_s < 0) {
     elapsed_s = 0;
   }
@@ -99,19 +142,17 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
     elapsed_s = total_s;
   }
 
-  int remaining = total_s - elapsed_s;
-  snprintf(time_buf, sizeof(time_buf), "%d:%02d", elapsed_s / 60, elapsed_s % 60);
-  text_layer_set_text(time_layer, time_buf);
-  snprintf(remain_buf, sizeof(remain_buf), "%ds", remaining);
-  text_layer_set_text(remain_layer, remain_buf);
   bar_width = (bar_total * elapsed_s) / total_s;
 
+  /* Une seule vibration de fin ; l'horloge continue ensuite. */
   if(elapsed_s >= total_s) {
-    tick_timer_service_unsubscribe();
-    vibes_short_pulse();
-  } else if(prev_s >= 0 && prev_s < mark_low * 15 && elapsed_s >= mark_low * 15) {
+    if(prev_s < total_s) {
+      vibes_short_pulse();
+    }
+  } else if(prev_s >= 0 && prev_s < low_s && elapsed_s >= low_s) {
     vibes_short_pulse();
   }
+
   prev_s = elapsed_s;
   layer_mark_dirty(progress_layer);
 }
@@ -138,56 +179,69 @@ static void window_unload(Window *window) {
 
 static void timer_window_load(Window *window) {
   window_set_background_color(window, GColorBlack);
-  Layer *window_layer = window_get_root_layer(window);
-  GRect bounds = layer_get_frame(window_layer);
+  Layer *root = window_get_root_layer(window);
+  GRect bounds = layer_get_bounds(root);
+  int w = bounds.size.w;
+  int h = bounds.size.h;
 
-  image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_TEA);
-  image_layer = bitmap_layer_create(GRect(bounds.size.w / 2 - 12, 188, 24, 28));
-  bitmap_layer_set_bitmap(image_layer, image);
-  bitmap_layer_set_alignment(image_layer, GAlignCenter);
-  bitmap_layer_set_compositing_mode(image_layer, GCompOpAssign);
-  layer_add_child(window_layer, bitmap_layer_get_layer(image_layer));
+  /* Bandeau de 56 px : moins du quart de l'écran Emery. */
+  clock_layer = text_layer_create(GRect(0, 0, w, 56));
+  text_layer_set_font(clock_layer,
+                     fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
+  text_layer_set_text_alignment(clock_layer, GTextAlignmentCenter);
+  text_layer_set_background_color(clock_layer, GColorBrightGreen);
+  text_layer_set_text_color(clock_layer, GColorBlack);
+  layer_add_child(root, text_layer_get_layer(clock_layer));
 
-  name_layer = text_layer_create(GRect(0, 10, bounds.size.w, 28));
-  text_layer_set_font(name_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  name_layer = text_layer_create(GRect(4, 59, w - 8, 37));
+  text_layer_set_font(name_layer,
+                     fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
   text_layer_set_text_alignment(name_layer, GTextAlignmentCenter);
-  text_layer_set_background_color(name_layer, GColorBlack);
+  text_layer_set_overflow_mode(name_layer, GTextOverflowModeTrailingEllipsis);
+  text_layer_set_background_color(name_layer, GColorClear);
   text_layer_set_text_color(name_layer, GColorWhite);
-  layer_add_child(window_layer, text_layer_get_layer(name_layer));
+  layer_add_child(root, text_layer_get_layer(name_layer));
 
-  content_layer = text_layer_create(GRect(0, 36, bounds.size.w, 28));
-  text_layer_set_font(content_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
-  text_layer_set_text_alignment(content_layer, GTextAlignmentCenter);
-  text_layer_set_background_color(content_layer, GColorBlack);
-  text_layer_set_text_color(content_layer, GColorWhite);
-  layer_add_child(window_layer, text_layer_get_layer(content_layer));
+  cup_layer = layer_create(GRect(0, 94, w, 68));
+  layer_set_update_proc(cup_layer, cup_paint_callback);
+  layer_add_child(root, cup_layer);
 
-  bar_total = bounds.size.w - 10 - 2 * PROGRESS_MARGIN;
-  time_layer = text_layer_create(GRect(0, 80, bounds.size.w / 2, 40));
-  text_layer_set_font(time_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
-  text_layer_set_text_alignment(time_layer, GTextAlignmentCenter);
-  text_layer_set_background_color(time_layer, GColorClear);
-  text_layer_set_text_color(time_layer, GColorWhite);
-  layer_add_child(window_layer, text_layer_get_layer(time_layer));
-
-  remain_layer = text_layer_create(GRect(bounds.size.w / 2, 80, bounds.size.w / 2, 40));
-  text_layer_set_font(remain_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
-  text_layer_set_text_alignment(remain_layer, GTextAlignmentCenter);
-  text_layer_set_background_color(remain_layer, GColorClear);
-  text_layer_set_text_color(remain_layer, GColorWhite);
-  layer_add_child(window_layer, text_layer_get_layer(remain_layer));
-
-  progress_layer = layer_create(GRect(5, 140, bounds.size.w-10, 40));
+  bar_total = w - 24 - 2 * PROGRESS_MARGIN;
+  progress_layer = layer_create(GRect(12, h - 60, w - 24, 28));
   layer_set_update_proc(progress_layer, progress_paint_callback);
-  layer_add_child(window_layer, progress_layer);
+  layer_add_child(root, progress_layer);
 
-  
+  duration_layer = text_layer_create(GRect(w / 2, h - 33, w / 2 - 12, 32));
+  text_layer_set_font(duration_layer,
+                     fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  text_layer_set_text_alignment(duration_layer, GTextAlignmentRight);
+  text_layer_set_background_color(duration_layer, GColorClear);
+  text_layer_set_text_color(duration_layer, GColorWhite);
+  layer_add_child(root, text_layer_get_layer(duration_layer));
+
+  zero_layer = text_layer_create(GRect(12, h - 33, 40, 32));
+  text_layer_set_font(zero_layer,
+                     fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  text_layer_set_text_alignment(zero_layer, GTextAlignmentLeft);
+  text_layer_set_background_color(zero_layer, GColorClear);
+  text_layer_set_text_color(zero_layer, GColorWhite);
+  text_layer_set_text(zero_layer, "0");
+  layer_add_child(root, text_layer_get_layer(zero_layer));
 }
 
 static void timer_window_appear(Window *window) {
   tea_entry *entry = entries + selected_entry;
   text_layer_set_text(name_layer, entry->name);
-  text_layer_set_text(content_layer, entry->content);
+
+  int total_s = entry->quarts_high * 15;
+  if(total_s % 60 == 0) {
+    snprintf(duration_buf, sizeof(duration_buf), "%d min", total_s / 60);
+  } else {
+    snprintf(duration_buf, sizeof(duration_buf),
+             "%d:%02d", total_s / 60, total_s % 60);
+  }
+  text_layer_set_text(duration_layer, duration_buf);
+
   bar_width = 0;
   start_s = time(NULL);
   prev_s = -1;
@@ -200,13 +254,13 @@ static void timer_window_disappear(Window *window) {
 }
 
 static void timer_window_unload(Window *window) {
+  tick_timer_service_unsubscribe();
   text_layer_destroy(name_layer);
-  text_layer_destroy(content_layer);
-  text_layer_destroy(time_layer);
-  text_layer_destroy(remain_layer);
+  text_layer_destroy(clock_layer);
+  text_layer_destroy(duration_layer);
+  text_layer_destroy(zero_layer);
   layer_destroy(progress_layer);
-  bitmap_layer_destroy(image_layer);
-  gbitmap_destroy(image);
+  layer_destroy(cup_layer);
 }
 
 static void message_received(DictionaryIterator *iter, void *context)
