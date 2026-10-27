@@ -269,7 +269,7 @@
 /* 5 */
 /***/ (function(module, exports) {
 
-	module.exports = {"dummy":10000}
+	module.exports = {"dummy":10000,"tea1Content":10003,"tea1Enabled":10001,"tea1Max":10005,"tea1Min":10004,"tea1Name":10002,"tea2Content":10008,"tea2Enabled":10006,"tea2Max":10010,"tea2Min":10009,"tea2Name":10007,"tea3Content":10013,"tea3Enabled":10011,"tea3Max":10015,"tea3Min":10014,"tea3Name":10012}
 
 /***/ }),
 /* 6 */

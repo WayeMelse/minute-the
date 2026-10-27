@@ -7,6 +7,10 @@ static TextLayer *name_layer;
 static TextLayer *content_layer;
 static Layer *progress_layer;
 static BitmapLayer *image_layer;
+static TextLayer *time_layer;
+static char time_buf[8];
+static uint16_t start_ms;
+static int prev_elapsedms;
 
 static int num_entries;
 static int selected_entry;
@@ -85,9 +89,19 @@ static void timer_callback(void *data)
   time_ms(&now, &nowms);
   int mark_high = entries[selected_entry].quarts_high;
   
-  int elapsedms = nowms + 1000 * (now - time_start);
+  int elapsedms = (int)nowms - (int)start_ms + 1000 * (int)(now - time_start);
+  if(elapsedms < 0) {
+    elapsedms = 0;
+  }
 
   bar_width = (bar_total * elapsedms) / (mark_high * 15000);
+  int remaining = mark_high * 15 - elapsedms / 1000;
+  if(remaining < 0) {
+    remaining = 0;
+  }
+  snprintf(time_buf, sizeof(time_buf), "%d:%02d", remaining / 60, remaining % 60);
+  text_layer_set_text(time_layer, time_buf);
+
   if(bar_width >= bar_total) {
     bar_width = bar_total;
     timer = 0;
@@ -97,10 +111,15 @@ static void timer_callback(void *data)
     if(nextms <= 0) {
       nextms = 1;
     }
+    int to_second = 1000 - (elapsedms % 1000);
+    if(nextms > to_second) {
+      nextms = to_second;
+    }
     int mark_low = entries[selected_entry].quarts_low;
-    if(elapsedms < mark_low * 15000 && nextms + elapsedms >= mark_low * 15000) {
+    if(prev_elapsedms >= 0 && prev_elapsedms < mark_low * 15000 && elapsedms >= mark_low * 15000) {
       vibes_short_pulse();
     }
+    prev_elapsedms = elapsedms;
     app_timer_register(nextms, timer_callback, 0);
   }
 
@@ -154,7 +173,14 @@ static void timer_window_load(Window *window) {
   layer_add_child(window_layer, text_layer_get_layer(content_layer));
 
   bar_total = bounds.size.w - 10 - 2 * PROGRESS_MARGIN;
-  progress_layer = layer_create(GRect(5, 100, bounds.size.w-10, 40));
+  time_layer = text_layer_create(GRect(0, 72, bounds.size.w, 52));
+  text_layer_set_font(time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
+  text_layer_set_text_alignment(time_layer, GTextAlignmentCenter);
+  text_layer_set_background_color(time_layer, GColorClear);
+  text_layer_set_text_color(time_layer, GColorWhite);
+  layer_add_child(window_layer, text_layer_get_layer(time_layer));
+
+  progress_layer = layer_create(GRect(5, 140, bounds.size.w-10, 40));
   layer_set_update_proc(progress_layer, progress_paint_callback);
   layer_add_child(window_layer, progress_layer);
 
@@ -166,7 +192,8 @@ static void timer_window_appear(Window *window) {
   text_layer_set_text(name_layer, entry->name);
   text_layer_set_text(content_layer, entry->content);
   bar_width = 0;
-  time_ms(&time_start, 0); /* use instead of time() in case they ever differ */
+  time_ms(&time_start, &start_ms);
+  prev_elapsedms = -1;
   timer = app_timer_register(1, timer_callback, 0);
 }
 
@@ -180,6 +207,7 @@ static void timer_window_disappear(Window *window) {
 static void timer_window_unload(Window *window) {
   text_layer_destroy(name_layer);
   text_layer_destroy(content_layer);
+  text_layer_destroy(time_layer);
   layer_destroy(progress_layer);
   bitmap_layer_destroy(image_layer);
   gbitmap_destroy(image);

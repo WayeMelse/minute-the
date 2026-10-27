@@ -6,7 +6,7 @@ const isSandbox = false;
 
 // Array with absolute file path strings
 const entryFilenames = ["_pkjs_shared_additions.js",
-"/home/wayem/projets/minute-the-reference/src/pkjs/index.js"];
+"/home/wayem/projets/minute-the/src/pkjs/index.js"];
 
 // folder path string
 const outputPath = "build";
@@ -18,11 +18,11 @@ const outputFilename = "pebble-js-app.js";
 const resolveRoots = ["/home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/common/include",
 "/home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/common/tools/webpack",
 "/home/wayem/.local/share/pebble-sdk/SDKs/current/node_modules",
-"/home/wayem/projets/minute-the-reference/build/js"];
+"/home/wayem/projets/minute-the/build/js"];
 
 // Object, { alias1: 'path1', ... }
 const resolveAliases = {"@rebble/clay": "@rebble/clay/dist/js",
-"app_package.json": "/home/wayem/projets/minute-the-reference/package.json"};
+"app_package.json": "/home/wayem/projets/minute-the/package.json"};
 
 // null or Object with key 'sourceMapFilename'
 const sourceMapConfig = {"sourceMapFilename": "pebble-js-app.js.map"};

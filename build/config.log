@@ -1,13 +1,13 @@
-# project  configured on Tue Oct 27 19:54:54 2026 by
+# project  configured on Tue Oct 27 20:01:59 2026 by
 # waf 2.1.4 (abi 20, python 30e04f0 on linux)
 # using /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/waf configure
 #
 ----------------------------------------
 Setting top to
-/home/wayem/projets/minute-the-reference
+/home/wayem/projets/minute-the
 ----------------------------------------
 Setting out to
-/home/wayem/projets/minute-the-reference/build
+/home/wayem/projets/minute-the/build
 ----------------------------------------
 Checking for program 'webpack'
 /home/wayem/.local/share/pebble-sdk/SDKs/current/node_modules/.bin/webpack
