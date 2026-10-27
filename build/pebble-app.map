@@ -1481,6 +1481,7 @@ LOAD emery/appinfo.auto.c.9.o
 LOAD emery/src/resource_ids.auto.c.9.o
 LOAD src/message_keys.auto.c.9.o
 LOAD /home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/pebble/emery/lib/libpebble.a
+LOAD /home/wayem/projets/minute-the-reference/node_modules/@rebble/clay/dist/binaries/emery/@rebble/libclay.a
 START GROUP
 LOAD /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/thumb/v7-m/nofp/libgcc.a
 LOAD /home/wayem/.local/share/pebble-sdk/SDKs/4.33.1/toolchain/arm-none-eabi/bin/../lib/gcc/arm-none-eabi/14.2.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc.a

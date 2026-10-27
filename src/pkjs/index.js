@@ -1,83 +1,119 @@
+var Clay = require('@rebble/clay');
+var clayConfig = require('./config');
+var clay = new Clay(clayConfig, null, { autoHandleEvents: false });
+
+function val(s, k) {
+  var x = s[k];
+  return (x && typeof x === 'object' && 'value' in x) ? x.value : x;
+}
+
 var msg_queue = [];
 
-function msg_ack(e) {
+function msg_ack() {
   msg_queue.shift();
   sendMessages();
 }
 
-function msg_nak(e) {
-//  console.log("nak, resending");
+function msg_nak() {
   sendMessages();
 }
 
 function sendMessages() {
-  if(msg_queue.length > 0) {
+  if (msg_queue.length > 0) {
     Pebble.sendAppMessage(msg_queue[0], msg_ack, msg_nak);
   }
 }
 
-Pebble.addEventListener("ready", function(e) {
-  var config = localStorage.getItem("config");
-  // "CANCELLED" is to work around an old bug that stored that string when the browser was closed using the back button on Android.
-  if(!config || config=="CANCELLED") {
-    var teas = [
-      [false, "White", "1 tbsp, 175-185F", 4, 12],
-      [false, "Chinese Green", "1 tsp, 185F", 12, 12],
-      [true, "Japanese Green", "1 tsp, 180F", 8, 12],
-      [true, "Black", "1 tsp, 206F", 12, 20],
-      [true, "Darjeeling", "1 tsp, 185F", 12, 12],
-      [true, "Oolong", "1 tsp, 185-206F", 12, 20],
-      [true, "Herbal Infusion", "1 tbsp, 206F", 20, 28]
-    ];
-    localStorage.setItem("config", JSON.stringify(teas));
-   }
+function defaultTeas() {
+  return [
+    [true, 'Thé noir', '1 c. à c., 95 °C', 12, 20],
+    [true, 'Thé vert', '1 c. à c., 80 °C', 8, 12],
+    [true, 'Tisane', '1 c. à s., 100 °C', 20, 28]
+  ];
+}
+
+Pebble.addEventListener('ready', function() {
+  var config = localStorage.getItem('config');
+
+  if (!config || config === 'CANCELLED') {
+    config = JSON.stringify(defaultTeas());
+    localStorage.setItem('config', config);
+  }
+
+  updateMenu(config);
 });
 
-Pebble.addEventListener("appmessage", function(e) {
-  updateMenu(localStorage.getItem("config"));
+Pebble.addEventListener('appmessage', function() {
+  updateMenu(localStorage.getItem('config'));
 });
 
-function updateMenu(conf) {
-  var teas = JSON.parse(conf);
+function updateMenu(config) {
+  var teas = JSON.parse(config);
   var count = 0;
-  for(var i=0; i<teas.length; i++) {
-    if(teas[i][0]) {
+  var i;
+
+  for (i = 0; i < teas.length; i++) {
+    if (teas[i][0]) {
       count++;
     }
   }
+
   var idx = 0;
-  for(i=0; i<teas.length; i++) {
-    if(teas[i][0]) {
-      var msg = {
-        "0": "u",
-        "1": idx,
-        "2": count,
-        "3": teas[i][1],
-        "4": teas[i][2],
-        "5": +teas[i][3],
-        "6": +teas[i][4]
-      };
-      msg_queue.push(msg);
+  for (i = 0; i < teas.length; i++) {
+    if (teas[i][0]) {
+      msg_queue.push({
+        0: 'u',
+        1: idx,
+        2: count,
+        3: teas[i][1],
+        4: teas[i][2],
+        5: teas[i][3],
+        6: teas[i][4]
+      });
       idx++;
     }
   }
+
   sendMessages();
 }
 
-Pebble.addEventListener("showConfiguration", function(e) {
-  var loc = 'http://teatime.blighty.com/teatime.html#' +
-    encodeURIComponent(localStorage.getItem("config"));
-//  console.log("redirecting to " + loc);
-  Pebble.openURL(loc);
+Pebble.addEventListener('showConfiguration', function() {
+  var url = clay.generateUrl();
+  console.log('Config URL: ' + url);
+  Pebble.openURL(url);
 });
 
-Pebble.addEventListener("webviewclosed", function(e) {
-  if(e.response && e.response.length) {
-    var config = decodeURIComponent(e.response);
-//    console.log("New config = " + config);
-    if(config != "CANCELLED") {
-      localStorage.setItem("config", config);
-      updateMenu(config);
+Pebble.addEventListener('webviewclosed', function(e) {
+  if (!e || !e.response) {
+    return;
+  }
+
+  var settings = JSON.parse(decodeURIComponent(e.response));
+  var teas = [];
+
+  for (var i = 1; i <= 3; i++) {
+    if (val(settings, 'tea' + i + 'Enabled')) {
+      var minMinutes = parseInt(val(settings, 'tea' + i + 'Min'), 10) || 3;
+      var maxMinutes = parseInt(val(settings, 'tea' + i + 'Max'), 10) || 5;
+
+      if (maxMinutes < minMinutes) {
+        maxMinutes = minMinutes;
+      }
+
+      teas.push([
+        true,
+        val(settings, 'tea' + i + 'Name') || ('Thé ' + i),
+        val(settings, 'tea' + i + 'Content') || '',
+        minMinutes * 4,
+        maxMinutes * 4
+      ]);
     }
   }
+
+  if (teas.length === 0) {
+    teas = defaultTeas();
+  }
+
+  localStorage.setItem('config', JSON.stringify(teas));
+  updateMenu(JSON.stringify(teas));
 });

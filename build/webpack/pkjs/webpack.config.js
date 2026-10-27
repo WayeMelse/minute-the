@@ -21,7 +21,8 @@ const resolveRoots = ["/home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core
 "/home/wayem/projets/minute-the-reference/build/js"];
 
 // Object, { alias1: 'path1', ... }
-const resolveAliases = {"app_package.json": "/home/wayem/projets/minute-the-reference/package.json"};
+const resolveAliases = {"@rebble/clay": "@rebble/clay/dist/js",
+"app_package.json": "/home/wayem/projets/minute-the-reference/package.json"};
 
 // null or Object with key 'sourceMapFilename'
 const sourceMapConfig = {"sourceMapFilename": "pebble-js-app.js.map"};

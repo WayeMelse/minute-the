@@ -10,7 +10,22 @@
         "watchface": false
     },
     "messageKeys": {
-        "dummy": 10000
+        "dummy": 10000,
+        "tea1Enabled": 10001,
+        "tea1Name": 10002,
+        "tea1Content": 10003,
+        "tea1Min": 10004,
+        "tea1Max": 10005,
+        "tea2Enabled": 10006,
+        "tea2Name": 10007,
+        "tea2Content": 10008,
+        "tea2Min": 10009,
+        "tea2Max": 10010,
+        "tea3Enabled": 10011,
+        "tea3Name": 10012,
+        "tea3Content": 10013,
+        "tea3Min": 10014,
+        "tea3Max": 10015
     },
     "resources": {
         "media": [
@@ -31,6 +46,21 @@
     "versionLabel": "1.0.0",
     "companyName": "WayeM",
     "appKeys": {
-        "dummy": 10000
+        "dummy": 10000,
+        "tea1Enabled": 10001,
+        "tea1Name": 10002,
+        "tea1Content": 10003,
+        "tea1Min": 10004,
+        "tea1Max": 10005,
+        "tea2Enabled": 10006,
+        "tea2Name": 10007,
+        "tea2Content": 10008,
+        "tea2Min": 10009,
+        "tea2Max": 10010,
+        "tea3Enabled": 10011,
+        "tea3Name": 10012,
+        "tea3Content": 10013,
+        "tea3Min": 10014,
+        "tea3Max": 10015
     }
 }

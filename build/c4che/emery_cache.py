@@ -28,14 +28,15 @@ LD = 'arm-none-eabi-ld'
 LIBDIR = '/usr/local/lib64'
 LIBPATH_ST = '-L%s'
 LIB_DIR = 'node_modules'
-LIB_JSON = []
+LIB_JSON = [{'name': '@rebble/clay', 'version': '1.1.0', 'description': 'Pebble Config Framework', 'types': 'index.d.ts', 'scripts': {'test-travis': './node_modules/.bin/gulp && ./node_modules/.bin/karma start ./test/karma.conf.js --single-run --browsers chromeTravisCI', 'test-debug': '(export DEBUG=true && ./node_modules/.bin/gulp && ./node_modules/.bin/karma start ./test/karma.conf.js --no-single-run)', 'test': './node_modules/.bin/gulp && ./node_modules/.bin/karma start ./test/karma.conf.js --single-run', 'lint': './node_modules/.bin/eslint ./', 'build': 'gulp', 'build:types': 'tsc -p tsconfig.declarations.json', 'check:types': 'tsc -p tsconfig.typecheck.json', 'dev': 'gulp dev', 'pebble-clean': 'rm -rf tmp src/js/index.js && pebble clean', 'pebble-publish': 'npm run pebble-clean && npm run build && pebble build && pebble package publish && npm run pebble-clean', 'pebble-build': 'npm run build && pebble build'}, 'repository': {'type': 'git', 'url': 'git+https://github.com/pebble-dev/clay.git'}, 'keywords': ['pebble', 'config', 'configuration', 'pebble-package'], 'author': 'Pebble Technology', 'license': 'MIT', 'bugs': {'url': 'https://github.com/pebble-dev/clay/issues'}, 'pebble': {'projectType': 'package', 'sdkVersion': '3', 'targetPlatforms': ['aplite', 'basalt', 'chalk', 'diorite', 'emery', 'flint', 'gabbro'], 'resources': {'media': []}, 'capabilities': ['configurable']}, 'homepage': 'https://github.com/pebble-dev/clay#readme', 'devDependencies': {'autoprefixer': '^10.4.23', 'bourbon': '^4.2.6', 'browserify': '^13.0.0', 'browserify-istanbul': '^3.0.1', 'chai': '^3.4.1', 'deamdify': '^0.2.0', 'deepcopy': '^0.6.1', 'del': '^2.0.2', 'eslint': '^1.5.1', 'eslint-config-pebble': '^1.2.0', 'eslint-plugin-standard': '^1.3.1', 'gulp': '^5.0.1', 'gulp-autoprefixer': '^3.1.0', 'gulp-htmlmin': '^1.3.0', 'gulp-inline': '^0.1.3', 'gulp-insert': '^0.5.0', 'gulp-sass': '^6.0.1', 'gulp-sourcemaps': '^1.6.0', 'gulp-uglify': '^1.5.2', 'joi': '^6.10.1', 'karma': '^6.4.0', 'karma-browserify': '^8.1.0', 'karma-chrome-launcher': '^3.2.0', 'karma-coverage': '^2.2.1', 'karma-mocha': '^2.0.1', 'karma-mocha-reporter': '^2.2.5', 'karma-source-map-support': '^1.4.0', 'karma-threshold-reporter': '^0.1.15', 'mocha': '^11.7.5', 'postcss': '8.5.6', 'require-from-string': '^2.0.2', 'sass': '^1.94.2', 'sinon': '^1.17.3', 'stringify': '^3.2.0', 'through': '^2.3.8', 'tosource': '^1.0.0', 'typescript': '6.0.2', 'vinyl-buffer': '^1.0.0', 'vinyl-source-stream': '^2.0.0', 'watchify': '^3.11.1'}, 'path': 'node_modules/@rebble/clay/dist', 'js_paths': ['node_modules/@rebble/clay/dist/js/index.js']}]
+LIB_RESOURCES_JSON = {'@rebble/clay': []}
 LIB_ST = '-l%s'
 LINKFLAGS = ['-mcpu=cortex-m3', '-mthumb', '-Wl,--gc-sections', '-Wl,--warn-common', '-fPIE', '-Os']
 LINKFLAGS_MACBUNDLE = ['-bundle', '-undefined', 'dynamic_lookup']
 LINKFLAGS_cshlib = ['-shared']
 LINKFLAGS_cstlib = ['-Wl,-Bstatic']
 LINK_CC = ['arm-none-eabi-gcc']
-MESSAGE_KEYS = {'dummy': 10000}
+MESSAGE_KEYS = {'dummy': 10000, 'tea1Enabled': 10001, 'tea1Name': 10002, 'tea1Content': 10003, 'tea1Min': 10004, 'tea1Max': 10005, 'tea2Enabled': 10006, 'tea2Name': 10007, 'tea2Content': 10008, 'tea2Min': 10009, 'tea2Max': 10010, 'tea3Enabled': 10011, 'tea3Name': 10012, 'tea3Content': 10013, 'tea3Min': 10014, 'tea3Max': 10015}
 MESSAGE_KEYS_DEFINITION = '/home/wayem/projets/minute-the-reference/build/src/message_keys.auto.c'
 MESSAGE_KEYS_HEADER = '/home/wayem/projets/minute-the-reference/build/include/message_keys.auto.h'
 MESSAGE_KEYS_JSON = '/home/wayem/projets/minute-the-reference/build/js/message_keys.json'
@@ -46,7 +47,7 @@ PEBBLE_SDK_ROOT = '/home/wayem/.local/share/pebble-sdk/SDKs/current/sdk-core/peb
 PLATFORM = {'NAME': 'emery', 'MAX_APP_BINARY_SIZE': 131072, 'MAX_APP_MEMORY_SIZE': 131072, 'MAX_WORKER_MEMORY_SIZE': 10240, 'MAX_RESOURCES_SIZE_APPSTORE': 262144, 'MAX_RESOURCES_SIZE': 1048576, 'DEFINES': ['PBL_PLATFORM_EMERY', 'PBL_COLOR', 'PBL_RECT', 'PBL_MICROPHONE', 'PBL_SMARTSTRAP', 'PBL_HEALTH', 'PBL_SMARTSTRAP_POWER', 'PBL_COMPASS', 'PBL_TOUCH', 'PBL_RGB_BACKLIGHT', 'PBL_SPEAKER', 'PBL_DISPLAY_WIDTH=200', 'PBL_DISPLAY_HEIGHT=228'], 'BUILD_DIR': 'emery', 'BUNDLE_BIN_DIR': 'emery', 'ADDITIONAL_TEXT_LINES_FOR_PEBBLE_H': [], 'HAS_MODDABLE_XS': True, 'MAX_FONT_GLYPH_SIZE': 512, 'TAGS': ['emery', 'color', 'rect', 'mic', 'strap', 'health', 'strappower', 'compass', 'touch', 'speaker', '200w', '228h']}
 PLATFORM_NAME = 'emery'
 PREFIX = '/usr/local'
-PROJECT_INFO = {'displayName': 'Minute Th\xe9', 'uuid': '766609f1-4d43-4bc0-89ad-88c795910f8e', 'sdkVersion': '3', 'enableMultiJS': True, 'targetPlatforms': ['emery'], 'watchapp': {'watchface': False}, 'messageKeys': {'dummy': 10000}, 'resources': {'media': [{'type': 'png', 'name': 'IMAGE_TEA', 'file': 'images/tea.png', 'menuIcon': True}]}, 'capabilities': ['configurable'], 'name': 'minute-the', 'shortName': 'Minute Th\xe9', 'longName': 'Minute Th\xe9', 'versionLabel': '1.0.0', 'companyName': 'WayeM', 'appKeys': {'dummy': 10000}}
+PROJECT_INFO = {'displayName': 'Minute Th\xe9', 'uuid': '766609f1-4d43-4bc0-89ad-88c795910f8e', 'sdkVersion': '3', 'enableMultiJS': True, 'targetPlatforms': ['emery'], 'watchapp': {'watchface': False}, 'messageKeys': {'dummy': 10000, 'tea1Enabled': 10001, 'tea1Name': 10002, 'tea1Content': 10003, 'tea1Min': 10004, 'tea1Max': 10005, 'tea2Enabled': 10006, 'tea2Name': 10007, 'tea2Content': 10008, 'tea2Min': 10009, 'tea2Max': 10010, 'tea3Enabled': 10011, 'tea3Name': 10012, 'tea3Content': 10013, 'tea3Min': 10014, 'tea3Max': 10015}, 'resources': {'media': [{'type': 'png', 'name': 'IMAGE_TEA', 'file': 'images/tea.png', 'menuIcon': True}]}, 'capabilities': ['configurable'], 'name': 'minute-the', 'shortName': 'Minute Th\xe9', 'longName': 'Minute Th\xe9', 'versionLabel': '1.0.0', 'companyName': 'WayeM', 'appKeys': {'dummy': 10000, 'tea1Enabled': 10001, 'tea1Name': 10002, 'tea1Content': 10003, 'tea1Min': 10004, 'tea1Max': 10005, 'tea2Enabled': 10006, 'tea2Name': 10007, 'tea2Content': 10008, 'tea2Min': 10009, 'tea2Max': 10010, 'tea3Enabled': 10011, 'tea3Name': 10012, 'tea3Content': 10013, 'tea3Min': 10014, 'tea3Max': 10015}}
 REQUESTED_PLATFORMS = ['emery']
 RESOURCES_JSON = [{'type': 'png', 'name': 'IMAGE_TEA', 'file': 'images/tea.png', 'menuIcon': True}]
 RPATH_ST = '-Wl,-rpath,%s'
@@ -61,7 +62,7 @@ STLIB_MARKER = None
 STLIB_ST = '-l%s'
 SUPPORTED_PLATFORMS = ['flint', 'emery', 'gabbro', 'chalk', 'diorite', 'basalt', 'aplite']
 TARGET_PLATFORMS = ['emery']
-TIMESTAMP = 1793125690
+TIMESTAMP = 1793127294
 USE_GROUPS = True
 VERBOSE = 0
 WEBPACK = ['/home/wayem/.local/share/pebble-sdk/SDKs/current/node_modules/.bin/webpack']

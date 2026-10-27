@@ -6,9 +6,11 @@
     "pebble-app"
   ],
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "@rebble/clay": "^1.1.0"
+  },
   "pebble": {
-    "displayName": "Minute Th\u00e9",
+    "displayName": "Minute Thé",
     "uuid": "766609f1-4d43-4bc0-89ad-88c795910f8e",
     "sdkVersion": "3",
     "enableMultiJS": true,
@@ -19,7 +21,22 @@
       "watchface": false
     },
     "messageKeys": [
-      "dummy"
+      "dummy",
+      "tea1Enabled",
+      "tea1Name",
+      "tea1Content",
+      "tea1Min",
+      "tea1Max",
+      "tea2Enabled",
+      "tea2Name",
+      "tea2Content",
+      "tea2Min",
+      "tea2Max",
+      "tea3Enabled",
+      "tea3Name",
+      "tea3Content",
+      "tea3Min",
+      "tea3Max"
     ],
     "resources": {
       "media": [
