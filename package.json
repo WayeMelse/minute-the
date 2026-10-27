@@ -10,7 +10,7 @@
     "@rebble/clay": "^1.1.0"
   },
   "pebble": {
-    "displayName": "Minute Thé",
+    "displayName": "Minute Th\u00e9",
     "uuid": "766609f1-4d43-4bc0-89ad-88c795910f8e",
     "sdkVersion": "3",
     "enableMultiJS": true,
@@ -36,7 +36,27 @@
       "tea3Name",
       "tea3Content",
       "tea3Min",
-      "tea3Max"
+      "tea3Max",
+      "tea4Enabled",
+      "tea4Name",
+      "tea4Content",
+      "tea4Min",
+      "tea4Max",
+      "tea5Enabled",
+      "tea5Name",
+      "tea5Content",
+      "tea5Min",
+      "tea5Max",
+      "tea6Enabled",
+      "tea6Name",
+      "tea6Content",
+      "tea6Min",
+      "tea6Max",
+      "tea7Enabled",
+      "tea7Name",
+      "tea7Content",
+      "tea7Min",
+      "tea7Max"
     ],
     "resources": {
       "media": [

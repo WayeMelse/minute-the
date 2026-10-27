@@ -1,2 +1,6 @@
 build/
 node_modules/
+/build/
+/node_modules/
+/pebble_screenshot_*.png
+/pebble_screenshot_*.jpg

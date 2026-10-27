@@ -9,6 +9,8 @@ static Layer *progress_layer;
 static BitmapLayer *image_layer;
 static TextLayer *time_layer;
 static char time_buf[8];
+static TextLayer *remain_layer;
+static char remain_buf[8];
 static time_t start_s;
 static int prev_s;
 
@@ -98,8 +100,10 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
   }
 
   int remaining = total_s - elapsed_s;
-  snprintf(time_buf, sizeof(time_buf), "%d:%02d", remaining / 60, remaining % 60);
+  snprintf(time_buf, sizeof(time_buf), "%d:%02d", elapsed_s / 60, elapsed_s % 60);
   text_layer_set_text(time_layer, time_buf);
+  snprintf(remain_buf, sizeof(remain_buf), "%ds", remaining);
+  text_layer_set_text(remain_layer, remain_buf);
   bar_width = (bar_total * elapsed_s) / total_s;
 
   if(elapsed_s >= total_s) {
@@ -141,7 +145,7 @@ static void timer_window_load(Window *window) {
   image_layer = bitmap_layer_create(GRect(bounds.size.w / 2 - 12, 188, 24, 28));
   bitmap_layer_set_bitmap(image_layer, image);
   bitmap_layer_set_alignment(image_layer, GAlignCenter);
-  bitmap_layer_set_compositing_mode(image_layer, GCompOpAssignInverted);
+  bitmap_layer_set_compositing_mode(image_layer, GCompOpAssign);
   layer_add_child(window_layer, bitmap_layer_get_layer(image_layer));
 
   name_layer = text_layer_create(GRect(0, 10, bounds.size.w, 28));
@@ -159,12 +163,19 @@ static void timer_window_load(Window *window) {
   layer_add_child(window_layer, text_layer_get_layer(content_layer));
 
   bar_total = bounds.size.w - 10 - 2 * PROGRESS_MARGIN;
-  time_layer = text_layer_create(GRect(0, 72, bounds.size.w, 52));
-  text_layer_set_font(time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
+  time_layer = text_layer_create(GRect(0, 80, bounds.size.w / 2, 40));
+  text_layer_set_font(time_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
   text_layer_set_text_alignment(time_layer, GTextAlignmentCenter);
   text_layer_set_background_color(time_layer, GColorClear);
   text_layer_set_text_color(time_layer, GColorWhite);
   layer_add_child(window_layer, text_layer_get_layer(time_layer));
+
+  remain_layer = text_layer_create(GRect(bounds.size.w / 2, 80, bounds.size.w / 2, 40));
+  text_layer_set_font(remain_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
+  text_layer_set_text_alignment(remain_layer, GTextAlignmentCenter);
+  text_layer_set_background_color(remain_layer, GColorClear);
+  text_layer_set_text_color(remain_layer, GColorWhite);
+  layer_add_child(window_layer, text_layer_get_layer(remain_layer));
 
   progress_layer = layer_create(GRect(5, 140, bounds.size.w-10, 40));
   layer_set_update_proc(progress_layer, progress_paint_callback);
@@ -192,6 +203,7 @@ static void timer_window_unload(Window *window) {
   text_layer_destroy(name_layer);
   text_layer_destroy(content_layer);
   text_layer_destroy(time_layer);
+  text_layer_destroy(remain_layer);
   layer_destroy(progress_layer);
   bitmap_layer_destroy(image_layer);
   gbitmap_destroy(image);

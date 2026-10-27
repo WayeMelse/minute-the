@@ -1,5 +1,6 @@
 var Clay = require('@rebble/clay');
 var clayConfig = require('./config');
+var defaults = require('./defaults');
 var clay = new Clay(clayConfig, null, { autoHandleEvents: false });
 
 function val(s, k) {
@@ -25,11 +26,13 @@ function sendMessages() {
 }
 
 function defaultTeas() {
-  return [
-    [true, 'Thé noir', '1 c. à c., 95 °C', 12, 20],
-    [true, 'Thé vert', '1 c. à c., 80 °C', 8, 12],
-    [true, 'Tisane', '1 c. à s., 100 °C', 20, 28]
-  ];
+  var teas = [];
+  defaults.forEach(function(t) {
+    if (t.enabled) {
+      teas.push([true, t.name, t.content, t.min * 4, t.max * 4]);
+    }
+  });
+  return teas;
 }
 
 Pebble.addEventListener('ready', function() {
@@ -91,7 +94,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
   var settings = JSON.parse(decodeURIComponent(e.response));
   var teas = [];
 
-  for (var i = 1; i <= 3; i++) {
+  for (var i = 1; i <= defaults.length; i++) {
     if (val(settings, 'tea' + i + 'Enabled')) {
       var minMinutes = parseInt(val(settings, 'tea' + i + 'Min'), 10) || 3;
       var maxMinutes = parseInt(val(settings, 'tea' + i + 'Max'), 10) || 5;
