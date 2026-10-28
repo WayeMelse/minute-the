@@ -64,7 +64,8 @@
       "tea4Color",
       "tea5Color",
       "tea6Color",
-      "tea7Color"
+      "tea7Color",
+      "soundEnabled"
     ],
     "resources": {
       "media": [

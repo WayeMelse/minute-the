@@ -1,5 +1,7 @@
 var catalog = {
   "fr": {
+    "sound": "Alertes sonores",
+    "soundHelp": "Un bip à la première alerte, deux en fin d’infusion.",
     "appearance": "Apparence",
     "light": "Fond blanc",
     "themeHelp": "Désactivé : fond noir. Activé : fond blanc.",
@@ -32,6 +34,8 @@ var catalog = {
     ]
   },
   "en": {
+    "sound": "Sound alerts",
+    "soundHelp": "One beep at the first alert, two when brewing ends.",
     "appearance": "Appearance",
     "light": "White background",
     "themeHelp": "Off: black background. On: white background.",
@@ -64,6 +68,8 @@ var catalog = {
     ]
   },
   "de": {
+    "sound": "Akustische Hinweise",
+    "soundHelp": "Ein Signal beim ersten Hinweis, zwei am Ende der Ziehzeit.",
     "appearance": "Darstellung",
     "light": "Weißer Hintergrund",
     "themeHelp": "Aus: schwarzer Hintergrund. Ein: weißer Hintergrund.",
@@ -96,6 +102,8 @@ var catalog = {
     ]
   },
   "es": {
+    "sound": "Alertas sonoras",
+    "soundHelp": "Un pitido en la primera alerta y dos al terminar la infusión.",
     "appearance": "Apariencia",
     "light": "Fondo blanco",
     "themeHelp": "Desactivado: fondo negro. Activado: fondo blanco.",
@@ -128,6 +136,8 @@ var catalog = {
     ]
   },
   "it": {
+    "sound": "Avvisi sonori",
+    "soundHelp": "Un segnale al primo avviso, due al termine dell’infusione.",
     "appearance": "Aspetto",
     "light": "Sfondo bianco",
     "themeHelp": "Disattivato: sfondo nero. Attivato: sfondo bianco.",
@@ -160,6 +170,8 @@ var catalog = {
     ]
   },
   "pt": {
+    "sound": "Alertas sonoros",
+    "soundHelp": "Um sinal no primeiro aviso, dois no fim da infusão.",
     "appearance": "Aparência",
     "light": "Fundo branco",
     "themeHelp": "Desativado: fundo preto. Ativado: fundo branco.",

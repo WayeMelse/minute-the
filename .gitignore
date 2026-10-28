@@ -4,3 +4,5 @@ node_modules/
 /node_modules/
 /pebble_screenshot_*.png
 /pebble_screenshot_*.jpg
+
+/.lock-waf_linux_build

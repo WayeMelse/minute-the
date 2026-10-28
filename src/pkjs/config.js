@@ -6,15 +6,17 @@ var defaults = getDefaults();
 var t = i18n.get();
 
 function minuteOptions(max) {
-  var options = [];
-  for (var minute = 1; minute <= max; minute++) {
-    options.push({
-      label: minute + ' min',
-      value: String(minute)
-    });
+    var options = [];
+    for (var seconds = 30; seconds <= max * 60; seconds += 30) {
+      var minutes = Math.floor(seconds / 60);
+      var remainder = seconds % 60;
+      options.push({
+        label: minutes + ':' + (remainder === 0 ? '00' : '30'),
+        value: String(seconds / 60)
+      });
+    }
+    return options;
   }
-  return options;
-}
 
 var config = [
   { type: 'heading', defaultValue: 'Minute Thé' },
@@ -37,7 +39,18 @@ var config = [
   }
 ];
 
-defaults.forEach(function(tea, i) {
+config.push({
+    type: 'section',
+    items: [{
+      type: 'toggle',
+      messageKey: 'soundEnabled',
+      label: t.sound,
+      description: t.soundHelp,
+      defaultValue: localStorage.getItem('soundEnabled') === '1'
+    }]
+  });
+
+  defaults.forEach(function(tea, i) {
   var n = i + 1;
 
   config.push({
@@ -87,7 +100,7 @@ defaults.forEach(function(tea, i) {
         messageKey: 'tea' + n + 'Max',
         label: t.end,
         defaultValue: String(tea.max),
-        options: minuteOptions(20)
+        options: minuteOptions(15)
       }
     ]
   });

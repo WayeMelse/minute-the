@@ -73,6 +73,11 @@ function updateMenu(config) {
   var teas = JSON.parse(config);
 
   msg_queue.push({
+    0: 's',
+    9: localStorage.getItem('soundEnabled') === '1' ? 1 : 0
+  });
+
+  msg_queue.push({
     0: 't',
     8: localStorage.getItem('themeLight') === '1' ? 1 : 0
   });
@@ -109,7 +114,6 @@ Pebble.addEventListener('showConfiguration', function() {
   defaults = getDefaults();
   clay = new Clay(clayConfig(), customClay, { autoHandleEvents: false });
   var url = clay.generateUrl();
-  console.log('Config URL: ' + url);
   Pebble.openURL(url);
 });
 
@@ -118,7 +122,18 @@ Pebble.addEventListener('webviewclosed', function(e) {
     return;
   }
 
+  // Mémoriser les champs pour la prochaine ouverture de Clay.
+  clay.getSettings(e.response, false);
+
   var settings = JSON.parse(decodeURIComponent(e.response));
+
+  var soundValue = val(settings, 'soundEnabled');
+  if (soundValue !== undefined) {
+    var soundOn = soundValue === true || soundValue === 1 ||
+      soundValue === '1' || soundValue === 'true';
+    localStorage.setItem('soundEnabled', soundOn ? '1' : '0');
+  }
+
   var themeValue = val(settings, 'themeLight');
   if (themeValue !== undefined) {
     var isLight = themeValue === true || themeValue === 1 ||
@@ -129,8 +144,10 @@ Pebble.addEventListener('webviewclosed', function(e) {
 
   for (var i = 1; i <= defaults.length; i++) {
     if (val(settings, 'tea' + i + 'Enabled')) {
-      var minMinutes = parseInt(val(settings, 'tea' + i + 'Min'), 10) || 3;
-      var maxMinutes = parseInt(val(settings, 'tea' + i + 'Max'), 10) || 5;
+      var minMinutes = parseFloat(val(settings, 'tea' + i + 'Min')) || 3;
+      minMinutes = Math.min(15, Math.max(0.5, Math.round(minMinutes * 2) / 2));
+      var maxMinutes = parseFloat(val(settings, 'tea' + i + 'Max')) || 5;
+      maxMinutes = Math.min(15, Math.max(0.5, Math.round(maxMinutes * 2) / 2));
 
       if (maxMinutes < minMinutes) {
         maxMinutes = minMinutes;

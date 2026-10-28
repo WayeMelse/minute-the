@@ -39,6 +39,8 @@ static int saved_current;
 #define STORE_THEME (STORE_BASE + 100)
 
 static bool light_theme;
+#define STORE_SOUND (STORE_BASE + 101)
+static bool sound_enabled;
 
 static GColor theme_background(void) {
   return light_theme ? GColorWhite : GColorBlack;
@@ -284,98 +286,215 @@ static void steam_draw(GContext *ctx, int cx,
   graphics_context_set_stroke_width(ctx, 2);
 }
 
-static void cup_paint_callback(Layer *layer, GContext *ctx)
-{
+static GColor cup_mix_color(GColor a, GColor b, int amount) {
+  int r = (((a.argb >> 4) & 3) * (3 - amount)
+         + ((b.argb >> 4) & 3) * amount + 1) / 3;
+  int g = (((a.argb >> 2) & 3) * (3 - amount)
+         + ((b.argb >> 2) & 3) * amount + 1) / 3;
+  int bl = ((a.argb & 3) * (3 - amount)
+          + (b.argb & 3) * amount + 1) / 3;
+  return (GColor){.argb = (uint8_t)(0xC0 | (r << 4) | (g << 2) | bl)};
+}
+
+static void cup_paint_callback(Layer *layer, GContext *ctx) {
   int cx = layer_get_bounds(layer).size.w / 2;
 
   static const GPoint rim[] = {
-    {-26, 33}, {-24, 31}, {-19, 29}, {-10, 28},
-    {10, 28}, {19, 29}, {24, 31}, {26, 33},
-    {24, 35}, {19, 37}, {10, 38}, {-10, 38},
-    {-19, 37}, {-24, 35}, {-26, 33}
+    {-29,30}, {-26,28}, {-21,26}, {-11,25},
+    {11,25}, {21,26}, {26,28}, {29,30},
+    {26,33}, {21,35}, {11,36}, {-11,36},
+    {-21,35}, {-26,33}, {-29,30}
   };
-
   static const GPoint body[] = {
-    {-26, 33}, {-25, 39}, {-23, 45}, {-20, 50},
-    {-16, 54}, {-11, 57}, {-5, 58},
-    {5, 58}, {11, 57}, {16, 54},
-    {20, 50}, {23, 45}, {25, 39}, {26, 33}
+    {-29,30}, {-28,37}, {-25,44}, {-22,49},
+    {-18,54}, {-12,57}, {-6,58}, {6,58},
+    {12,57}, {18,54}, {22,49}, {25,44},
+    {28,37}, {29,30}
   };
-
   static const GPoint handle[] = {
-    {26, 35}, {31, 35}, {35, 37}, {37, 40},
-    {37, 43}, {35, 46}, {31, 48}, {22, 49}
+    {28,31}, {32,31}, {36,32}, {39,34},
+    {40,37}, {39,40}, {37,43}, {34,45},
+    {30,47}, {25,48}
   };
-
   static const GPoint saucer[] = {
-    {-20, 53}, {-27, 54}, {-33, 56}, {-36, 59},
-    {-34, 61}, {-28, 63}, {-18, 65}, {-8, 66},
-    {8, 66}, {18, 65}, {28, 63}, {34, 61},
-    {36, 59}, {33, 56}, {27, 54}, {20, 53}
+    {-22,53}, {-30,54}, {-36,56}, {-40,58},
+    {-37,60}, {-31,61}, {-20,62}, {-9,63},
+    {9,63}, {20,62}, {31,61}, {37,60},
+    {40,58}, {36,56}, {30,54}, {22,53}
   };
-
   static GPoint saucer_band[] = {
-    {-36, 59}, {-34, 61}, {-28, 63}, {-18, 65},
-    {-8, 66}, {8, 66}, {18, 65}, {28, 63},
-    {34, 61}, {36, 59},
-    {29, 60}, {19, 62}, {8, 63}, {-8, 63},
-    {-19, 62}, {-29, 60}
+    {-24,62}, {24,62}, {24,64}, {18,66},
+    {-18,66}, {-24,64}
   };
-
-  static GPoint liquid[] = {
-    {-26, 33}, {-24, 31}, {-19, 29}, {-10, 28},
-    {10, 28}, {19, 29}, {24, 31}, {26, 33},
-    {24, 35}, {19, 37}, {10, 38}, {-10, 38},
-    {-19, 37}, {-24, 35}
+  static GPoint liquid_body[] = {
+    {-25,35}, {25,35}, {24,43}, {21,48},
+    {17,52}, {11,55}, {6,56}, {-6,56},
+    {-11,55}, {-17,52}, {-21,48}, {-24,43}
   };
-
-  static const GPoint steam_left[] = {
-    {-15, 24}, {-12, 20}, {-12, 16},
-    {-16, 12}, {-16, 8}, {-13, 5}
+  static GPoint liquid_surface[] = {
+    {-25,35}, {-23,33}, {-18,32}, {-9,31},
+    {9,31}, {18,32}, {23,33}, {25,35},
+    {23,37}, {18,38}, {9,39}, {-9,39},
+    {-18,38}, {-23,37}
   };
-
+  static GPoint liquid_shadow[] = {
+    {21,40}, {24,38}, {23,44}, {20,49},
+    {15,52}, {9,55}, {-3,56}, {-11,54},
+    {1,54}, {11,50}, {18,46}
+  };
+  static const GPoint glass_reflection[] = {
+    {-21,36}, {-20,41}, {-17,46}, {-13,51},
+    {-10,53}
+  };
+  static const GPoint surface_front[] = {
+    {-25,35}, {-23,37}, {-18,38}, {-9,39},
+    {9,39}, {18,38}, {23,37}, {25,35}
+  };
   static const GPoint steam_middle[] = {
-    {0, 22}, {3, 18}, {3, 13},
-    {-1, 9}, {-1, 4}, {2, 1}
+    {0,20}, {3,17}, {3,13}, {-1,9}, {-1,5}, {2,1}
+  };
+  static const GPoint steam_left[] = {
+    {-15,20}, {-12,17}, {-12,14}, {-16,11}, {-16,7}, {-13,5}
   };
 
   static const GPoint steam_right[] = {
-    {15, 24}, {18, 20}, {18, 16},
-    {14, 12}, {14, 8}, {17, 5}
+    {15,20}, {18,17}, {18,14}, {14,11}, {14,7}, {17,5}
   };
 
-  graphics_context_set_stroke_color(ctx, theme_foreground());
-  graphics_context_set_stroke_width(ctx, 2);
+  /* Quatre états : transparent, léger, infusé, terminé. */
+  int total_s = entries[selected_entry].quarts_high * 15;
+  int first_s = entries[selected_entry].quarts_low * 15;
+  if(total_s <= 0) total_s = 15;
+
+  int elapsed_s = (int)(time(NULL) - start_s);
+  if(elapsed_s < 0) elapsed_s = 0;
+  if(elapsed_s > total_s) elapsed_s = total_s;
+
+  int stage = 0;
+  if(elapsed_s >= total_s) {
+    stage = 3;
+  } else if(elapsed_s * 2 >= total_s) {
+    stage = elapsed_s >= first_s ? 2 : 1;
+  }
+
+  GColor pale_yellow = (GColor){.argb = 0xFE}; /* RGB 255,255,170 */
+  GColor yellow = (GColor){.argb = 0xFC};      /* RGB 255,255,0 */
+  GColor amber = (GColor){.argb = 0xF8};       /* RGB 255,170,0 */
+  GColor orange = (GColor){.argb = 0xF4};      /* RGB 255,85,0 */
+
+  GColor liquid_fill = theme_background();
+  uint8_t color_id = tea_colors[selected_entry];
+
+  if(stage > 0) {
+    if(color_id == 0) {
+      /* Thé blanc. */
+      liquid_fill = stage == 1 ? GColorWhite
+                  : stage == 2 ? pale_yellow : yellow;
+    } else if(color_id == 2 || color_id == 3) {
+      /* Thé noir et oolong. */
+      liquid_fill = stage == 1 ? yellow
+                  : stage == 2 ? amber : orange;
+    } else {
+      /* Thé vert et tisane. */
+      liquid_fill = stage == 1 ? pale_yellow
+                  : stage == 2 ? yellow : amber;
+    }
+  }
+
+  bool colored = liquid_fill.argb != theme_background().argb;
+  GColor surface_color = colored
+    ? cup_mix_color(liquid_fill, GColorWhite, 1)
+    : theme_background();
+  GColor shadow_color = colored
+    ? cup_mix_color(liquid_fill, GColorBlack, 1)
+    : theme_background();
+
+  graphics_context_set_fill_color(ctx, theme_background());
+  graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
 
   graphics_context_set_fill_color(ctx, theme_foreground());
   cup_fill_shape(ctx, cx, saucer_band,
     sizeof(saucer_band) / sizeof(saucer_band[0]));
 
-  bool finished = bar_total > 0 && bar_width >= bar_total;
-  uint8_t color_id = tea_colors[selected_entry];
-  GColor liquid_color = (color_id == 0 || color_id == 2)
-    ? GColorPastelYellow : tea_accent();
+  graphics_context_set_fill_color(ctx, liquid_fill);
+  cup_fill_shape(ctx, cx, liquid_body,
+    sizeof(liquid_body) / sizeof(liquid_body[0]));
 
-  graphics_context_set_fill_color(ctx,
-    finished ? liquid_color : theme_background());
-  cup_fill_shape(ctx, cx, liquid,
-    sizeof(liquid) / sizeof(liquid[0]));
+  if(colored) {
+    graphics_context_set_fill_color(ctx, shadow_color);
+    cup_fill_shape(ctx, cx, liquid_shadow,
+      sizeof(liquid_shadow) / sizeof(liquid_shadow[0]));
+  }
 
-  cup_draw_outline(ctx, cx, saucer,
-    sizeof(saucer) / sizeof(saucer[0]));
-  cup_draw_outline(ctx, cx, handle,
-    sizeof(handle) / sizeof(handle[0]));
-  cup_draw_outline(ctx, cx, body,
-    sizeof(body) / sizeof(body[0]));
-  cup_draw_outline(ctx, cx, rim,
-    sizeof(rim) / sizeof(rim[0]));
+  graphics_context_set_fill_color(ctx, surface_color);
+  cup_fill_shape(ctx, cx, liquid_surface,
+    sizeof(liquid_surface) / sizeof(liquid_surface[0]));
 
-  steam_draw(ctx, cx, steam_left,
-    sizeof(steam_left) / sizeof(steam_left[0]), 0);
-  steam_draw(ctx, cx, steam_middle,
-    sizeof(steam_middle) / sizeof(steam_middle[0]), 4);
-  steam_draw(ctx, cx, steam_right,
-    sizeof(steam_right) / sizeof(steam_right[0]), 8);
+  if(colored) {
+    graphics_context_set_stroke_color(ctx, shadow_color);
+    graphics_context_set_stroke_width(ctx, 1);
+    cup_draw_outline(ctx, cx, surface_front,
+      sizeof(surface_front) / sizeof(surface_front[0]));
+  }
+
+  graphics_context_set_stroke_color(ctx, theme_foreground());
+  for(size_t i = 1;
+      i < sizeof(glass_reflection) / sizeof(glass_reflection[0]); ++i) {
+    graphics_context_set_stroke_width(ctx, i <= 2 ? 2 : 1);
+    graphics_draw_line(ctx,
+      GPoint(cx + glass_reflection[i - 1].x, glass_reflection[i - 1].y),
+      GPoint(cx + glass_reflection[i].x, glass_reflection[i].y));
+  }
+
+  graphics_context_set_stroke_color(ctx, theme_foreground());
+  graphics_context_set_stroke_width(ctx, 2);
+
+  graphics_context_set_stroke_width(ctx, 2);
+  cup_draw_outline(ctx, cx, saucer, sizeof(saucer) / sizeof(saucer[0]));
+
+  /* Contours de la tasse et de son anse : 2 pixels. */
+  graphics_context_set_stroke_width(ctx, 2);
+  cup_draw_outline(ctx, cx, handle, sizeof(handle) / sizeof(handle[0]));
+  cup_draw_outline(ctx, cx, body, sizeof(body) / sizeof(body[0]));
+  cup_draw_outline(ctx, cx, rim, sizeof(rim) / sizeof(rim[0]));
+
+  steam_draw(ctx, cx, steam_left, sizeof(steam_left) / sizeof(steam_left[0]), 0);
+  steam_draw(ctx, cx, steam_middle, sizeof(steam_middle) / sizeof(steam_middle[0]), 4);
+  steam_draw(ctx, cx, steam_right, sizeof(steam_right) / sizeof(steam_right[0]), 8);
+}
+
+static void play_alert_sound(bool final_alert) {
+#ifdef PBL_SPEAKER
+  if(!sound_enabled || speaker_is_muted()) {
+    return;
+  }
+
+  static const SpeakerNote notes[] = {
+    {
+      .midi_note = 81,
+      .waveform = SpeakerWaveformSine,
+      .duration_ms = 150,
+      .velocity = 100
+    },
+    {
+      .midi_note = 0,
+      .waveform = SpeakerWaveformSine,
+      .duration_ms = 150
+    },
+    {
+      .midi_note = 81,
+      .waveform = SpeakerWaveformSine,
+      .duration_ms = 150,
+      .velocity = 100
+    }
+  };
+
+  if(!speaker_play_notes(notes, final_alert ? 3 : 1, 40)) {
+    APP_LOG(APP_LOG_LEVEL_WARNING, "Sound alert could not start");
+  }
+#else
+  (void)final_alert;
+#endif
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
@@ -412,9 +531,11 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
         .num_segments = 3
       };
       vibes_enqueue_custom_pattern(pattern);
+      play_alert_sound(true);
     }
   } else if(prev_s >= 0 && prev_s < low_s && elapsed_s >= low_s) {
     vibes_short_pulse();
+    play_alert_sound(false);
   }
 
   prev_s = elapsed_s;
@@ -576,6 +697,20 @@ static void message_received(DictionaryIterator *iter, void *context)
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Invalid message");
     return;
   }
+  if(strcmp(tp->value->cstring, "s") == 0) {
+    Tuple *sound = dict_find(iter, 9);
+    if(sound) {
+      sound_enabled = sound->value->int32 != 0;
+      persist_write_int(STORE_SOUND, sound_enabled ? 1 : 0);
+#ifdef PBL_SPEAKER
+      if(!sound_enabled) {
+        speaker_stop();
+      }
+#endif
+    }
+    return;
+  }
+
   if(strcmp(tp->value->cstring, "t") == 0) {
     Tuple *theme = dict_find(iter, 8);
     if(theme) {
@@ -680,6 +815,8 @@ static void message_dropped(AppMessageResult reason, void *context)
 }
 
 static void init(void) {
+  sound_enabled = persist_exists(STORE_SOUND)
+    && persist_read_int(STORE_SOUND) != 0;
   light_theme = persist_exists(STORE_THEME)
     && persist_read_int(STORE_THEME) != 0;
   num_entries = 0;
