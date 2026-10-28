@@ -1,6 +1,6 @@
 # Credits
 
-Minute Thé is an adaptation of TeaTime for Pebble Time 2.
+Minute Thé is an adaptation of TeaTime for Pebble Time 2 and Pebble Round 2.
 
 ## Original project
 
@@ -12,8 +12,9 @@ Minute Thé is an adaptation of TeaTime for Pebble Time 2.
 
 - Copyright (c) 2026 WayeM
 - Custom cup icon created for Minute Thé, based on the in-app cup illustration.
-- Emery port, redesigned interface, multilingual Clay configuration,
-  alert features and programmatically drawn cup illustration.
+- Emery and Gabbro ports, rectangular and round interface layouts,
+  multilingual Clay configuration, alert features and programmatically
+  drawn cup illustration.
 - Contributions to this adaptation are also distributed under the MIT License.
 
 ## Dependencies

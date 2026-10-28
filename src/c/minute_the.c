@@ -11,6 +11,9 @@ static bool steam_running;
 static uint8_t steam_phase;
 static Layer *separator_layer;
 static TextLayer *clock_layer;
+#ifdef PBL_ROUND
+static Layer *clock_top_layer;
+#endif
 static TextLayer *duration_layer;
 static TextLayer *zero_layer;
 static char clock_buf[12];
@@ -87,8 +90,21 @@ static GColor tea_progress_color(void)
   return tea_accent();
 }
 
+#ifdef PBL_ROUND
+static void clock_top_paint_callback(Layer *layer, GContext *ctx)
+{
+  graphics_context_set_fill_color(ctx, tea_accent());
+  graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
+}
+#endif
+
 static void update_tea_colors(void)
 {
+#ifdef PBL_ROUND
+  if(clock_top_layer) {
+    layer_mark_dirty(clock_top_layer);
+  }
+#endif
   if(clock_layer) {
     text_layer_set_background_color(clock_layer, tea_accent());
     text_layer_set_text_color(clock_layer, tea_clock_foreground());
@@ -119,6 +135,14 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer,
   GRect bounds = layer_get_bounds(cell_layer);
   bool selected = menu_cell_layer_is_highlighted(cell_layer);
 
+#ifdef PBL_ROUND
+  const int text_margin = 40;
+  const GTextAlignment text_alignment = GTextAlignmentCenter;
+#else
+  const int text_margin = 8;
+  const GTextAlignment text_alignment = GTextAlignmentLeft;
+#endif
+
   graphics_context_set_fill_color(ctx,
     selected ? theme_foreground() : theme_background());
   graphics_fill_rect(ctx, bounds, 0, GCornerNone);
@@ -127,13 +151,13 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer,
 
   graphics_draw_text(ctx, t->name,
     fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD),
-    GRect(8, 0, bounds.size.w - 16, 35),
-    GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+    GRect(text_margin, 0, bounds.size.w - 2 * text_margin, 35),
+    GTextOverflowModeTrailingEllipsis, text_alignment, NULL);
 
   graphics_draw_text(ctx, t->content,
     fonts_get_system_font(FONT_KEY_GOTHIC_24),
-    GRect(8, 34, bounds.size.w - 16, 32),
-    GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+    GRect(text_margin, 34, bounds.size.w - 2 * text_margin, 32),
+    GTextOverflowModeTrailingEllipsis, text_alignment, NULL);
 }
 
 static void menu_select_callback(MenuLayer *menu, MenuIndex *cell_index, void *data)
@@ -575,7 +599,15 @@ static void timer_window_load(Window *window) {
   int h = bounds.size.h;
 
   /* Bandeau de 56 px : moins du quart de l'écran Emery. */
+#ifdef PBL_ROUND
+  clock_top_layer = layer_create(GRect(0, 0, w, 4));
+  layer_set_update_proc(clock_top_layer, clock_top_paint_callback);
+  layer_add_child(root, clock_top_layer);
+
+  clock_layer = text_layer_create(GRect(0, 4, w, 52));
+#else
   clock_layer = text_layer_create(GRect(0, 0, w, 56));
+#endif
   text_layer_set_font(clock_layer,
                      fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
   text_layer_set_text_alignment(clock_layer, GTextAlignmentCenter);
@@ -600,12 +632,26 @@ static void timer_window_load(Window *window) {
   layer_set_update_proc(cup_layer, cup_paint_callback);
   layer_add_child(root, cup_layer);
 
-  bar_total = w - 24 - 2 * PROGRESS_MARGIN;
-  progress_layer = layer_create(GRect(12, h - 60, w - 24, 28));
+#ifdef PBL_ROUND
+  const int progress_margin = 40;
+  const int progress_y = h - 78;
+  const int label_margin = 64;
+  const int label_y = h - 53;
+#else
+  const int progress_margin = 12;
+  const int progress_y = h - 60;
+  const int label_margin = 12;
+  const int label_y = h - 33;
+#endif
+
+  bar_total = w - 2 * progress_margin - 2 * PROGRESS_MARGIN;
+  progress_layer = layer_create(
+    GRect(progress_margin, progress_y, w - 2 * progress_margin, 28));
   layer_set_update_proc(progress_layer, progress_paint_callback);
   layer_add_child(root, progress_layer);
 
-  duration_layer = text_layer_create(GRect(w / 2, h - 33, w / 2 - 12, 32));
+  duration_layer = text_layer_create(
+    GRect(w / 2, label_y, w / 2 - label_margin, 32));
   text_layer_set_font(duration_layer,
                      fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   text_layer_set_text_alignment(duration_layer, GTextAlignmentRight);
@@ -613,7 +659,7 @@ static void timer_window_load(Window *window) {
   text_layer_set_text_color(duration_layer, theme_foreground());
   layer_add_child(root, text_layer_get_layer(duration_layer));
 
-  zero_layer = text_layer_create(GRect(12, h - 33, 40, 32));
+  zero_layer = text_layer_create(GRect(label_margin, label_y, 40, 32));
   text_layer_set_font(zero_layer,
                      fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   text_layer_set_text_alignment(zero_layer, GTextAlignmentLeft);
@@ -655,6 +701,10 @@ static void timer_window_unload(Window *window) {
   tick_timer_service_unsubscribe();
   text_layer_destroy(name_layer);
   text_layer_destroy(clock_layer);
+#ifdef PBL_ROUND
+  layer_destroy(clock_top_layer);
+  clock_top_layer = NULL;
+#endif
   text_layer_destroy(duration_layer);
   text_layer_destroy(zero_layer);
   layer_destroy(progress_layer);

@@ -1,7 +1,6 @@
 # Minute Thé
 
-A tea brewing timer for Pebble Time 2, written in C for the Emery platform
-(200 × 228 display).
+A tea brewing timer for Pebble Time 2 and Pebble Round 2, written in C.
 
 Based on [TeaTime by Steve Atkins](https://github.com/wttw/pebble-teatime).
 
@@ -42,7 +41,10 @@ automatically translated.
 
 ## Compatibility
 
-This version targets Pebble Time 2 (`emery`) only.
+- Pebble Time 2 (`emery`): 200 × 228 rectangular display.
+- Pebble Round 2 (`gabbro`): 260 × 260 round display.
+
+The interface uses platform-specific layouts for rectangular and round screens.
 
 ## Building
 
@@ -52,10 +54,16 @@ With the Pebble SDK installed, run from the project root:
 pebble build
 ```
 
-Install in the emulator:
+Install in the Pebble Time 2 emulator:
 
 ```sh
 pebble install --emulator emery
+```
+
+Or install in the Pebble Round 2 emulator:
+
+```sh
+pebble install --emulator gabbro
 ```
 
 Install on a watch paired with a phone, replacing `<phone-IP>` with the phone's
