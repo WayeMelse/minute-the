@@ -1,0 +1,8 @@
+Minute Thé 1.0.1
+
+- Active brewing sessions are now saved and automatically restored when you reopen the app, including the time spent away.
+- Added a confirmation screen before stopping a brew, helping prevent accidental timer resets.
+- Tailored the confirmation screen for Pebble Time 2 and Pebble Round 2.
+- Improved confirmation-screen contrast in both light and dark themes.
+
+Note: alerts are only delivered while the app is open. Restoring a session does not provide background alerts.
