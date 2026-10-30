@@ -2,6 +2,12 @@
 
 static Window *window;
 static Window *timer_window;
+static Window *confirm_window;
+static TextLayer *confirm_stop_layer;
+static TextLayer *confirm_continue_layer;
+static Layer *confirm_bar_layer;
+static Layer *confirm_cup_layer;
+static bool confirm_open;
 static MenuLayer *menu_layer;
 static TextLayer *name_layer;
 static Layer *progress_layer;
@@ -44,6 +50,48 @@ static int saved_current;
 static bool light_theme;
 #define STORE_SOUND (STORE_BASE + 101)
 static bool sound_enabled;
+
+#define STORE_SESSION (STORE_BASE + 102)
+
+typedef struct __attribute__((__packed__)) brew_session {
+  uint8_t version;
+  uint8_t tea_index;
+  time_t start_s;
+} brew_session;
+
+static void save_session(void)
+{
+  brew_session session = {
+    .version = 1,
+    .tea_index = (uint8_t)selected_entry,
+    .start_s = start_s
+  };
+  persist_write_data(STORE_SESSION, &session, sizeof(session));
+}
+
+static bool load_session(void)
+{
+  brew_session session;
+
+  if(persist_get_size(STORE_SESSION) != (int)sizeof(session)) {
+    return false;
+  }
+  if(persist_read_data(STORE_SESSION, &session, sizeof(session))
+      != (int)sizeof(session)) {
+    return false;
+  }
+  if(session.version != 1 || session.tea_index != selected_entry) {
+    return false;
+  }
+
+  start_s = session.start_s;
+  return true;
+}
+
+static void clear_session(void)
+{
+  persist_delete(STORE_SESSION);
+}
 
 static GColor theme_background(void) {
   return light_theme ? GColorWhite : GColorBlack;
@@ -163,6 +211,9 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer,
 static void menu_select_callback(MenuLayer *menu, MenuIndex *cell_index, void *data)
 {
   selected_entry = cell_index->row;
+  start_s = time(NULL);
+  save_session();
+
   window_stack_push(timer_window, true);
 }
 
@@ -591,8 +642,191 @@ static void window_unload(Window *window) {
   menu_layer_destroy(menu_layer);
 }
 
+static void confirm_continue(void)
+{
+  confirm_open = false;
+  window_stack_pop(true);
+}
+
+static void confirm_stop(void)
+{
+  /* Ferme la confirmation puis l'ecran d'infusion. */
+  confirm_open = false;
+  window_stack_pop(false);
+  window_stack_pop(true);
+}
+
+static void confirm_back_handler(ClickRecognizerRef recognizer, void *context)
+{
+  confirm_stop();
+}
+
+static void confirm_down_handler(ClickRecognizerRef recognizer, void *context)
+{
+  confirm_continue();
+}
+
+static void confirm_click_provider(void *context)
+{
+  /* Select et Haut sont volontairement inactifs. */
+  window_single_click_subscribe(BUTTON_ID_BACK, confirm_back_handler);
+  window_single_click_subscribe(BUTTON_ID_DOWN, confirm_down_handler);
+}
+
+static void confirm_bar_paint_callback(Layer *layer, GContext *ctx)
+{
+  GRect bounds = layer_get_bounds(layer);
+  const int band_w = 26;
+#ifdef PBL_ROUND
+  const int left_cx = band_w - 6;
+  const int right_cx = bounds.size.w - band_w + 5;
+#else
+  const int left_cx = band_w / 2;
+  const int right_cx = bounds.size.w - band_w / 2;
+#endif
+
+  graphics_context_set_fill_color(ctx, theme_foreground());
+  graphics_fill_rect(ctx, GRect(0, 0, band_w, bounds.size.h), 0, GCornerNone);
+  graphics_fill_rect(ctx,
+    GRect(bounds.size.w - band_w, 0, band_w, bounds.size.h),
+    0, GCornerNone);
+
+  graphics_context_set_fill_color(ctx, theme_background());
+
+  /* Fleche gauche, en face du bouton Retour : Stop. */
+#ifdef PBL_ROUND
+  const int stop_y = bounds.size.h / 3 - 12;
+  const int continue_y = bounds.size.h * 2 / 3 + 12;
+#else
+  const int stop_y = bounds.size.h / 4 - 18;
+  const int continue_y = bounds.size.h * 3 / 4 + 18;
+#endif
+
+#ifdef PBL_ROUND
+  GPoint left_arrow[] = {
+    {6, stop_y - 6},
+    {6, stop_y + 6},
+    {-6, stop_y}
+  };
+#else
+  GPoint left_arrow[] = {
+    {8, stop_y - 10},
+    {8, stop_y + 10},
+    {-10, stop_y}
+  };
+#endif
+  cup_fill_shape(ctx, left_cx, left_arrow, 3);
+
+  /* Fleche droite, en face du bouton Bas : Continue. */
+#ifdef PBL_ROUND
+  static GPoint right_arrow[] = {
+    {-6, -16}, {-6, -4}, {6, -10}
+  };
+#else
+  static GPoint right_arrow[] = {
+    {-8, -20}, {-8, 0}, {10, -10}
+  };
+#endif
+  GPoint right_shape[3];
+  for(int i = 0; i < 3; ++i) {
+    right_shape[i] = GPoint(right_arrow[i].x,
+                            continue_y + 10 + right_arrow[i].y);
+  }
+  cup_fill_shape(ctx, right_cx, right_shape, 3);
+}
+
+static void confirm_cup_paint_callback(Layer *layer, GContext *ctx)
+{
+  cup_paint_callback(layer, ctx);
+
+  int cx = layer_get_bounds(layer).size.w / 2;
+  GPoint bottom_left = GPoint(cx - 38, 68);
+  GPoint top_right = GPoint(cx + 34, 6);
+
+  /* Un halo detache la barre du dessin de la tasse. */
+  graphics_context_set_stroke_color(ctx, theme_background());
+  graphics_context_set_stroke_width(ctx, 8);
+  graphics_draw_line(ctx, bottom_left, top_right);
+
+  graphics_context_set_stroke_color(ctx, GColorWhite);
+  graphics_context_set_stroke_width(ctx, 5);
+  graphics_draw_line(ctx, bottom_left, top_right);
+  graphics_context_set_stroke_width(ctx, 1);
+}
+
+static void confirm_window_load(Window *window)
+{
+  window_set_background_color(window, theme_background());
+  Layer *root = window_get_root_layer(window);
+  GRect bounds = layer_get_bounds(root);
+  const int band_w = 26;
+  const int text_margin = 6;
+  const int center_w = bounds.size.w - 2 * band_w - 2 * text_margin;
+#ifdef PBL_ROUND
+  const int stop_y = bounds.size.h / 3 - 12;
+  const int continue_y = bounds.size.h * 2 / 3 + 12;
+#else
+  const int stop_y = bounds.size.h / 4 - 18;
+  const int continue_y = bounds.size.h * 3 / 4 + 18;
+#endif
+
+  confirm_stop_layer = text_layer_create(
+    GRect(band_w + text_margin, stop_y - 20, center_w, 40));
+  text_layer_set_font(confirm_stop_layer,
+                      fonts_get_system_font(FONT_KEY_GOTHIC_28));
+  text_layer_set_text_alignment(confirm_stop_layer, GTextAlignmentLeft);
+  text_layer_set_background_color(confirm_stop_layer, GColorClear);
+  text_layer_set_text_color(confirm_stop_layer, theme_foreground());
+  text_layer_set_text(confirm_stop_layer, "Stop brewing?");
+  layer_add_child(root, text_layer_get_layer(confirm_stop_layer));
+
+  confirm_continue_layer = text_layer_create(
+    GRect(band_w + text_margin, continue_y - 20, center_w, 40));
+  text_layer_set_font(confirm_continue_layer,
+                      fonts_get_system_font(FONT_KEY_GOTHIC_28));
+  text_layer_set_text_alignment(confirm_continue_layer, GTextAlignmentRight);
+  text_layer_set_background_color(confirm_continue_layer, GColorClear);
+  text_layer_set_text_color(confirm_continue_layer, theme_foreground());
+  text_layer_set_text(confirm_continue_layer, "Continue?");
+  layer_add_child(root, text_layer_get_layer(confirm_continue_layer));
+
+  confirm_bar_layer = layer_create(bounds);
+  layer_set_update_proc(confirm_bar_layer, confirm_bar_paint_callback);
+  layer_add_child(root, confirm_bar_layer);
+
+  /* Meme tasse que sur l'ecran d'infusion, centree entre les textes. */
+  confirm_cup_layer = layer_create(
+    GRect((bounds.size.w - 100) / 2, bounds.size.h / 2 - 34, 100, 74));
+  layer_set_update_proc(confirm_cup_layer, confirm_cup_paint_callback);
+  layer_add_child(root, confirm_cup_layer);
+}
+
+static void confirm_window_unload(Window *window)
+{
+  layer_destroy(confirm_cup_layer);
+  confirm_cup_layer = NULL;
+  layer_destroy(confirm_bar_layer);
+  text_layer_destroy(confirm_stop_layer);
+  text_layer_destroy(confirm_continue_layer);
+  confirm_bar_layer = NULL;
+  confirm_stop_layer = NULL;
+  confirm_continue_layer = NULL;
+}
+
+static void timer_back_handler(ClickRecognizerRef recognizer, void *context)
+{
+  confirm_open = true;
+  window_stack_push(confirm_window, true);
+}
+
+static void timer_click_provider(void *context)
+{
+  window_single_click_subscribe(BUTTON_ID_BACK, timer_back_handler);
+}
+
 static void timer_window_load(Window *window) {
   window_set_background_color(window, theme_background());
+  window_set_click_config_provider(window, timer_click_provider);
   Layer *root = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(root);
   int w = bounds.size.w;
@@ -684,8 +918,28 @@ static void timer_window_appear(Window *window) {
   text_layer_set_text(duration_layer, duration_buf);
 
   bar_width = 0;
-  start_s = time(NULL);
-  prev_s = -1;
+  if(load_session()) {
+    int restored_total_s = entry->quarts_high * 15;
+    int restored_elapsed_s = (int)(time(NULL) - start_s);
+
+    if(restored_total_s <= 0) {
+      restored_total_s = 15;
+    }
+    if(restored_elapsed_s < 0) {
+      restored_elapsed_s = 0;
+    }
+    if(restored_elapsed_s > restored_total_s) {
+      restored_elapsed_s = restored_total_s;
+    }
+
+    /* Ne rejoue pas une alerte deja passee pendant l'interruption. */
+    prev_s = restored_elapsed_s;
+  } else {
+    start_s = time(NULL);
+    save_session();
+    prev_s = -1;
+  }
+
   tick_handler(NULL, SECOND_UNIT);
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
   steam_start();
@@ -694,6 +948,11 @@ static void timer_window_appear(Window *window) {
 static void timer_window_disappear(Window *window) {
   steam_stop();
   tick_timer_service_unsubscribe();
+
+  /* La confirmation ne doit pas effacer la session en cours. */
+  if(!confirm_open) {
+    clear_session();
+  }
 }
 
 static void timer_window_unload(Window *window) {
@@ -937,6 +1196,13 @@ static void init(void) {
         .unload = timer_window_unload,
   });
 
+  confirm_window = window_create();
+  window_set_click_config_provider(confirm_window, confirm_click_provider);
+  window_set_window_handlers(confirm_window, (WindowHandlers) {
+      .load = confirm_window_load,
+        .unload = confirm_window_unload,
+  });
+
   window_stack_push(window, true);
 }
 
@@ -944,6 +1210,7 @@ static void deinit(void) {
   window_stack_pop_all(false);
   window_destroy(window);
   window_destroy(timer_window);
+  window_destroy(confirm_window);
   persist_write_int(STORE_CURRENT, selected_entry);
 }
 
