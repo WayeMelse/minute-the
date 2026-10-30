@@ -88,6 +88,31 @@ static bool load_session(void)
   return true;
 }
 
+static bool restore_saved_session(void)
+{
+  brew_session session;
+
+  if(!persist_exists(STORE_SESSION)) {
+    return false;
+  }
+
+  int bytes = persist_read_data(STORE_SESSION, &session, sizeof(session));
+  if(bytes != (int)sizeof(session)
+      || persist_get_size(STORE_SESSION) != (int)sizeof(session)
+      || session.version != 1
+      || session.tea_index >= num_entries
+      || session.start_s <= 0
+      || session.start_s > time(NULL)) {
+    APP_LOG(APP_LOG_LEVEL_WARNING, "Invalid saved brewing session");
+    persist_delete(STORE_SESSION);
+    return false;
+  }
+
+  selected_entry = session.tea_index;
+  start_s = session.start_s;
+  return true;
+}
+
 static void clear_session(void)
 {
   persist_delete(STORE_SESSION);
@@ -650,9 +675,13 @@ static void confirm_continue(void)
 
 static void confirm_stop(void)
 {
-  /* Ferme la confirmation puis l'ecran d'infusion. */
+  /* Retire le minuteur masque pour ne pas declencher son appear. */
+  window_stack_remove(timer_window, false);
+
+  clear_session();
   confirm_open = false;
-  window_stack_pop(false);
+
+  /* La confirmation se ferme directement vers le menu. */
   window_stack_pop(true);
 }
 
@@ -748,7 +777,7 @@ static void confirm_cup_paint_callback(Layer *layer, GContext *ctx)
   graphics_context_set_stroke_width(ctx, 8);
   graphics_draw_line(ctx, bottom_left, top_right);
 
-  graphics_context_set_stroke_color(ctx, GColorWhite);
+  graphics_context_set_stroke_color(ctx, theme_foreground());
   graphics_context_set_stroke_width(ctx, 5);
   graphics_draw_line(ctx, bottom_left, top_right);
   graphics_context_set_stroke_width(ctx, 1);
@@ -949,10 +978,7 @@ static void timer_window_disappear(Window *window) {
   steam_stop();
   tick_timer_service_unsubscribe();
 
-  /* La confirmation ne doit pas effacer la session en cours. */
-  if(!confirm_open) {
-    clear_session();
-  }
+  /* Une disparition de fenetre ne signifie pas un arret volontaire. */
 }
 
 static void timer_window_unload(Window *window) {
@@ -1204,6 +1230,11 @@ static void init(void) {
   });
 
   window_stack_push(window, true);
+
+  /* Reouvre directement l'infusion sans passer par la selection du menu. */
+  if(restore_saved_session()) {
+    window_stack_push(timer_window, false);
+  }
 }
 
 static void deinit(void) {
