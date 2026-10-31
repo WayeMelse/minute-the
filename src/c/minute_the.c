@@ -26,6 +26,13 @@ static char clock_buf[12];
 static char duration_buf[16];
 static time_t start_s;
 static int prev_s;
+static int duration_offset_s;
+
+static Layer *toast_layer;
+static AppTimer *toast_timer;
+static char toast_buf[16];
+static bool toast_visible;
+static int toast_delta_s;
 
 static int num_entries;
 static int selected_entry;
@@ -57,14 +64,16 @@ typedef struct __attribute__((__packed__)) brew_session {
   uint8_t version;
   uint8_t tea_index;
   time_t start_s;
+  int16_t duration_offset_s;
 } brew_session;
 
 static void save_session(void)
 {
   brew_session session = {
-    .version = 1,
+    .version = 2,
     .tea_index = (uint8_t)selected_entry,
-    .start_s = start_s
+    .start_s = start_s,
+    .duration_offset_s = (int16_t)duration_offset_s
   };
   persist_write_data(STORE_SESSION, &session, sizeof(session));
 }
@@ -72,16 +81,20 @@ static void save_session(void)
 static bool load_session(void)
 {
   brew_session session;
-
-  if(persist_get_size(STORE_SESSION) != (int)sizeof(session)) {
+  int size = persist_get_size(STORE_SESSION);
+  if(size <= 0) {
     return false;
   }
-  if(persist_read_data(STORE_SESSION, &session, sizeof(session))
-      != (int)sizeof(session)) {
+  if(persist_read_data(STORE_SESSION, &session, sizeof(session)) < 6) {
     return false;
   }
-  if(session.version != 1 || session.tea_index != selected_entry) {
+  if(session.tea_index != selected_entry) {
     return false;
+  }
+  if(session.version == 2 && size == (int)sizeof(session)) {
+    duration_offset_s = session.duration_offset_s;
+  } else {
+    duration_offset_s = 0;
   }
 
   start_s = session.start_s;
@@ -91,18 +104,14 @@ static bool load_session(void)
 static bool restore_saved_session(void)
 {
   brew_session session;
-
   if(!persist_exists(STORE_SESSION)) {
     return false;
   }
 
+  int size = persist_get_size(STORE_SESSION);
   int bytes = persist_read_data(STORE_SESSION, &session, sizeof(session));
-  if(bytes != (int)sizeof(session)
-      || persist_get_size(STORE_SESSION) != (int)sizeof(session)
-      || session.version != 1
-      || session.tea_index >= num_entries
-      || session.start_s <= 0
-      || session.start_s > time(NULL)) {
+  if(bytes < 6 || session.tea_index >= num_entries
+      || session.start_s <= 0 || session.start_s > time(NULL)) {
     APP_LOG(APP_LOG_LEVEL_WARNING, "Invalid saved brewing session");
     persist_delete(STORE_SESSION);
     return false;
@@ -110,6 +119,11 @@ static bool restore_saved_session(void)
 
   selected_entry = session.tea_index;
   start_s = session.start_s;
+  if(session.version == 2 && size == (int)sizeof(session)) {
+    duration_offset_s = session.duration_offset_s;
+  } else {
+    duration_offset_s = 0;
+  }
   return true;
 }
 
@@ -237,6 +251,7 @@ static void menu_select_callback(MenuLayer *menu, MenuIndex *cell_index, void *d
 {
   selected_entry = cell_index->row;
   start_s = time(NULL);
+  duration_offset_s = 0;
   save_session();
 
   window_stack_push(timer_window, true);
@@ -250,14 +265,13 @@ static void progress_paint_callback(Layer *layer, GContext *ctx)
   int mark_low = entries[selected_entry].quarts_low;
   int mark_high = entries[selected_entry].quarts_high;
 
-  /* Bordure pleine : épaisseur déterministe de 3 pixels. */
+  /* Bordure pleine : epaisseur deterministe de 3 pixels. */
   graphics_context_set_fill_color(ctx, theme_foreground());
   graphics_fill_rect(ctx, bounds, 5, GCornersAll);
   graphics_context_set_fill_color(ctx, theme_background());
   graphics_fill_rect(ctx,
     GRect(PROGRESS_MARGIN, PROGRESS_MARGIN, bar_total, h),
     2, GCornersAll);
-
 
   graphics_context_set_fill_color(ctx, tea_progress_color());
   if(bar_width > 0) {
@@ -462,7 +476,7 @@ static void cup_paint_callback(Layer *layer, GContext *ctx) {
   };
 
   /* Quatre états : transparent, léger, infusé, terminé. */
-  int total_s = entries[selected_entry].quarts_high * 15;
+  int total_s = entries[selected_entry].quarts_high * 15 + duration_offset_s;
   int first_s = entries[selected_entry].quarts_low * 15;
   if(total_s <= 0) total_s = 15;
 
@@ -605,11 +619,13 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
            clock_is_24h_style() ? "%H:%M" : "%I:%M", local);
   text_layer_set_text(clock_layer, clock_buf);
 
-  int total_s = entries[selected_entry].quarts_high * 15;
-  int low_s = entries[selected_entry].quarts_low * 15;
+  int base_high = entries[selected_entry].quarts_high * 15;
+  int total_s = base_high + duration_offset_s;
   if(total_s <= 0) {
     total_s = 15;
   }
+  int base_low = entries[selected_entry].quarts_low * 15;
+  int low_s = base_high > 0 ? (base_low * total_s) / base_high : base_low;
 
   int elapsed_s = (int)(now - start_s);
   if(elapsed_s < 0) {
@@ -842,6 +858,137 @@ static void confirm_window_unload(Window *window)
   confirm_continue_layer = NULL;
 }
 
+static void update_duration_label(void)
+{
+  int total_s = entries[selected_entry].quarts_high * 15 + duration_offset_s;
+  if(total_s <= 0) total_s = 15;
+  if(total_s % 60 == 0) {
+    snprintf(duration_buf, sizeof(duration_buf), "%d min", total_s / 60);
+  } else {
+    snprintf(duration_buf, sizeof(duration_buf),
+             "%d:%02d", total_s / 60, total_s % 60);
+  }
+  if(duration_layer) {
+    text_layer_set_text(duration_layer, duration_buf);
+  }
+}
+
+static void toast_timer_callback(void *context)
+{
+  toast_timer = NULL;
+  toast_visible = false;
+  toast_delta_s = 0;
+  if(toast_layer) {
+    layer_mark_dirty(toast_layer);
+  }
+  vibes_short_pulse();
+}
+
+static void show_toast_delta(int delta)
+{
+  if(!toast_visible) {
+    toast_delta_s = delta;
+  } else {
+    toast_delta_s += delta;
+  }
+  toast_visible = true;
+
+  int abs_s = toast_delta_s >= 0 ? toast_delta_s : -toast_delta_s;
+  char sign = toast_delta_s >= 0 ? '+' : '-';
+
+  if(abs_s % 60 == 0) {
+    snprintf(toast_buf, sizeof(toast_buf), "%c%d min", sign, abs_s / 60);
+  } else if(abs_s >= 60) {
+    snprintf(toast_buf, sizeof(toast_buf), "%c%d:%02d", sign, abs_s / 60, abs_s % 60);
+  } else {
+    snprintf(toast_buf, sizeof(toast_buf), "%c%ds", sign, abs_s);
+  }
+
+  if(toast_timer) {
+    app_timer_cancel(toast_timer);
+  }
+  toast_timer = app_timer_register(1200, toast_timer_callback, NULL);
+
+  if(toast_layer) {
+    layer_mark_dirty(toast_layer);
+  }
+}
+
+static void toast_paint_callback(Layer *layer, GContext *ctx)
+{
+  if(!toast_visible) {
+    return;
+  }
+  GRect bounds = layer_get_bounds(layer);
+
+  /* Badge au centre de la jauge */
+  int badge_w = 84;
+  int badge_h = bounds.size.h;
+  GRect badge_rect = GRect((bounds.size.w - badge_w) / 2, 0, badge_w, badge_h);
+
+  graphics_context_set_fill_color(ctx, theme_background());
+  graphics_fill_rect(ctx, badge_rect, 4, GCornersAll);
+
+  graphics_context_set_stroke_color(ctx, theme_foreground());
+  graphics_context_set_stroke_width(ctx, 1);
+  graphics_draw_round_rect(ctx, badge_rect, 4);
+
+  graphics_context_set_text_color(ctx, theme_foreground());
+  graphics_draw_text(ctx, toast_buf,
+                     fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD),
+                     GRect(badge_rect.origin.x, badge_rect.origin.y - 2, badge_w, badge_h),
+                     GTextOverflowModeFill, GTextAlignmentCenter, NULL);
+}
+
+static void timer_up_handler(ClickRecognizerRef recognizer, void *context)
+{
+  int base_total = entries[selected_entry].quarts_high * 15;
+  int old_total = base_total + duration_offset_s;
+
+  duration_offset_s += 30;
+  save_session();
+
+  /* Si le timer etait termine, relancer la vapeur */
+  time_t now = time(NULL);
+  int elapsed_s = (int)(now - start_s);
+  if(prev_s >= old_total && elapsed_s < base_total + duration_offset_s) {
+    steam_start();
+  }
+
+  show_toast_delta(30);
+  update_duration_label();
+  tick_handler(NULL, SECOND_UNIT);
+}
+
+static void timer_down_handler(ClickRecognizerRef recognizer, void *context)
+{
+  int base_total = entries[selected_entry].quarts_high * 15;
+  int current_total = base_total + duration_offset_s;
+  time_t now = time(NULL);
+  int elapsed_s = (int)(now - start_s);
+  if(elapsed_s < 0) elapsed_s = 0;
+
+  /* On ne peut pas descendre en dessous de 30s ni en dessous du temps deja ecoule */
+  int min_allowed = elapsed_s > 30 ? elapsed_s : 30;
+  if(current_total <= min_allowed) {
+    return;
+  }
+
+  int target = current_total - 30;
+  if(target < min_allowed) {
+    target = min_allowed;
+  }
+
+  int actual_delta = current_total - target;
+  duration_offset_s -= actual_delta;
+  prev_s = elapsed_s; /* empeche tout declenchement retroactif d'une alerte depassee */
+  save_session();
+
+  show_toast_delta(-actual_delta);
+  update_duration_label();
+  tick_handler(NULL, SECOND_UNIT);
+}
+
 static void timer_back_handler(ClickRecognizerRef recognizer, void *context)
 {
   confirm_open = true;
@@ -851,6 +998,8 @@ static void timer_back_handler(ClickRecognizerRef recognizer, void *context)
 static void timer_click_provider(void *context)
 {
   window_single_click_subscribe(BUTTON_ID_BACK, timer_back_handler);
+  window_single_click_subscribe(BUTTON_ID_UP, timer_up_handler);
+  window_single_click_subscribe(BUTTON_ID_DOWN, timer_down_handler);
 }
 
 static void timer_window_load(Window *window) {
@@ -913,6 +1062,11 @@ static void timer_window_load(Window *window) {
   layer_set_update_proc(progress_layer, progress_paint_callback);
   layer_add_child(root, progress_layer);
 
+  toast_layer = layer_create(
+    GRect(progress_margin, progress_y, w - 2 * progress_margin, 28));
+  layer_set_update_proc(toast_layer, toast_paint_callback);
+  layer_add_child(root, toast_layer);
+
   duration_layer = text_layer_create(
     GRect(w / 2, label_y, w / 2 - label_margin, 32));
   text_layer_set_font(duration_layer,
@@ -937,18 +1091,13 @@ static void timer_window_appear(Window *window) {
   text_layer_set_text(name_layer, entry->name);
   update_tea_colors();
 
-  int total_s = entry->quarts_high * 15;
-  if(total_s % 60 == 0) {
-    snprintf(duration_buf, sizeof(duration_buf), "%d min", total_s / 60);
+  if(!load_session()) {
+    start_s = time(NULL);
+    duration_offset_s = 0;
+    save_session();
+    prev_s = -1;
   } else {
-    snprintf(duration_buf, sizeof(duration_buf),
-             "%d:%02d", total_s / 60, total_s % 60);
-  }
-  text_layer_set_text(duration_layer, duration_buf);
-
-  bar_width = 0;
-  if(load_session()) {
-    int restored_total_s = entry->quarts_high * 15;
+    int restored_total_s = entry->quarts_high * 15 + duration_offset_s;
     int restored_elapsed_s = (int)(time(NULL) - start_s);
 
     if(restored_total_s <= 0) {
@@ -963,11 +1112,10 @@ static void timer_window_appear(Window *window) {
 
     /* Ne rejoue pas une alerte deja passee pendant l'interruption. */
     prev_s = restored_elapsed_s;
-  } else {
-    start_s = time(NULL);
-    save_session();
-    prev_s = -1;
   }
+
+  update_duration_label();
+  bar_width = 0;
 
   tick_handler(NULL, SECOND_UNIT);
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
@@ -976,6 +1124,11 @@ static void timer_window_appear(Window *window) {
 
 static void timer_window_disappear(Window *window) {
   steam_stop();
+  if(toast_timer) {
+    app_timer_cancel(toast_timer);
+    toast_timer = NULL;
+  }
+  toast_visible = false;
   tick_timer_service_unsubscribe();
 
   /* Une disparition de fenetre ne signifie pas un arret volontaire. */
@@ -992,6 +1145,12 @@ static void timer_window_unload(Window *window) {
 #endif
   text_layer_destroy(duration_layer);
   text_layer_destroy(zero_layer);
+  if(toast_timer) {
+    app_timer_cancel(toast_timer);
+    toast_timer = NULL;
+  }
+  layer_destroy(toast_layer);
+  toast_layer = NULL;
   layer_destroy(progress_layer);
   layer_destroy(cup_layer);
   layer_destroy(separator_layer);
