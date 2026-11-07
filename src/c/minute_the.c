@@ -8,6 +8,7 @@ static TextLayer *confirm_continue_layer;
 static Layer *confirm_bar_layer;
 static Layer *confirm_cup_layer;
 static bool confirm_open;
+static bool confirm_exit_app;
 static MenuLayer *menu_layer;
 static TextLayer *name_layer;
 static Layer *progress_layer;
@@ -685,19 +686,30 @@ static void window_unload(Window *window) {
 
 static void confirm_continue(void)
 {
+  confirm_exit_app = false;
   confirm_open = false;
   window_stack_pop(true);
 }
 
 static void confirm_stop(void)
 {
-  /* Retire le minuteur masque pour ne pas declencher son appear. */
+  /* Retire le minuteur masque sans le faire reapparaitre. */
   window_stack_remove(timer_window, false);
 
   clear_session();
   confirm_open = false;
 
-  /* La confirmation se ferme directement vers le menu. */
+  bool exit_app = confirm_exit_app;
+  confirm_exit_app = false;
+
+  if(exit_app) {
+    /* Infusion terminee : quitter vers le cadran. */
+    exit_reason_set(APP_EXIT_ACTION_PERFORMED_SUCCESSFULLY);
+    window_stack_pop_all(false);
+    return;
+  }
+
+  /* Ouverture par Retour : comportement habituel. */
   window_stack_pop(true);
 }
 
@@ -991,6 +1003,24 @@ static void timer_down_handler(ClickRecognizerRef recognizer, void *context)
 
 static void timer_back_handler(ClickRecognizerRef recognizer, void *context)
 {
+  confirm_exit_app = false;
+  confirm_open = true;
+  window_stack_push(confirm_window, true);
+}
+
+static void timer_select_handler(ClickRecognizerRef recognizer, void *context)
+{
+  int total_s = entries[selected_entry].quarts_high * 15 + duration_offset_s;
+  if(total_s <= 0) {
+    total_s = 15;
+  }
+
+  /* Inactif tant que la duree ajustee n'est pas ecoulee. */
+  if((int)(time(NULL) - start_s) < total_s) {
+    return;
+  }
+
+  confirm_exit_app = true;
   confirm_open = true;
   window_stack_push(confirm_window, true);
 }
@@ -998,6 +1028,7 @@ static void timer_back_handler(ClickRecognizerRef recognizer, void *context)
 static void timer_click_provider(void *context)
 {
   window_single_click_subscribe(BUTTON_ID_BACK, timer_back_handler);
+  window_single_click_subscribe(BUTTON_ID_SELECT, timer_select_handler);
   window_single_click_subscribe(BUTTON_ID_UP, timer_up_handler);
   window_single_click_subscribe(BUTTON_ID_DOWN, timer_down_handler);
 }
